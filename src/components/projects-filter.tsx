@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { ProjectCard } from "@/components/project-card";
 import { Badge } from "@/components/ui/badge";
-import { projectFilters, projects, type Project } from "@/lib/data/projects";
+import { projectFilters, projects, type Project } from "@/lib/data";
 
 function matchesFilter(project: Project, filter: (typeof projectFilters)[number]) {
   if (filter === "All") return true;

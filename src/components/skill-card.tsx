@@ -1,4 +1,4 @@
-import { skills, type SkillCategory } from "@/lib/data/skills";
+import { skills, type SkillCategory } from "@/lib/data";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
 

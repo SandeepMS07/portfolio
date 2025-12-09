@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight, Star } from "lucide-react";
 import Link from "next/link";
-import type { Project } from "@/lib/data/projects";
+import type { Project } from "@/lib/data";
 import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
 import { cn } from "@/lib/utils";

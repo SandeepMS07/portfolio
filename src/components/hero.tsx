@@ -4,15 +4,10 @@ import { motion } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { heroHighlights } from "@/lib/data";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
-
-const highlights = [
-  "Multi-tenant AI chat & voice platforms (KAI)",
-  "Real-time sports tech (T20 Mumbai)",
-  "Enterprise auth, billing & licensing (AuraML)",
-];
 
 export function Hero() {
   return (
@@ -74,7 +69,7 @@ export function Hero() {
             </Button>
           </div>
           <div className="flex flex-wrap gap-2">
-            {highlights.map((item, index) => (
+            {heroHighlights.map((item, index) => (
               <motion.div
                 key={item}
                 initial={{ opacity: 0, y: 8 }}

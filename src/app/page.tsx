@@ -1,13 +1,11 @@
+import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProjectCard } from "@/components/project-card";
 import { ExperienceCard } from "@/components/experience-card";
 import { SkillCard } from "@/components/skill-card";
-import { projects } from "@/lib/data/projects";
-import { experiences } from "@/lib/data/experience";
-import { skills } from "@/lib/data/skills";
-import Link from "next/link";
+import { projects, experiences, skills } from "@/lib/data";
 
 const featuredProjects = projects.filter((p) => p.highlight).slice(0, 3);
 const recentExperience = experiences.slice(0, 2);

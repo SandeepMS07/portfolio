@@ -1,6 +1,6 @@
 import { ExperienceCard } from "@/components/experience-card";
 import { PageHeader } from "@/components/page-header";
-import { experiences } from "@/lib/data/experience";
+import { experiences } from "@/lib/data";
 
 export default function ExperiencePage() {
   return (

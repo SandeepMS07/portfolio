@@ -1,4 +1,4 @@
-import type { ExperienceItem } from "@/lib/data/experience";
+import type { ExperienceItem } from "@/lib/data";
 import { Card } from "./ui/card";
 
 type ExperienceCardProps = {
