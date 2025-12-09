@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Download } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { heroHighlights } from "@/lib/data";
+import { heroHighlights, heroContent, heroProfile } from "@/lib/data";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card } from "./ui/card";
@@ -43,26 +43,25 @@ export function Hero() {
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           <Badge variant="primary" className="uppercase tracking-[0.25em]">
-            Full Stack · AI Platforms
+            {heroContent.badge}
           </Badge>
           <div className="space-y-4">
             <h1 className="text-4xl font-semibold leading-tight text-white sm:text-5xl">
-              Sandeep M S — Full Stack &amp; AI Platform Engineer
+              {heroContent.heading}
             </h1>
             <p className="text-lg text-slate-300">
-              FastAPI • Next.js • Ionic • Multi-Tenant SaaS • AI Voice &amp;
-              Chat Bots • Real-Time Systems
+              {heroContent.subheading}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Button asChild>
-              <Link href="/projects">
+              <Link href={heroContent.ctaProjects}>
                 View Projects
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button variant="ghost" asChild>
-              <Link href="/resume.pdf">
+              <Link href={heroContent.ctaResume}>
                 Download Resume
                 <Download className="h-4 w-4" />
               </Link>
@@ -94,8 +93,8 @@ export function Hero() {
               <div className="flex items-center gap-3">
                 <div className="relative h-16 w-16 overflow-hidden rounded-2xl border border-white/15">
                   <Image
-                    src="/profile.jpeg"
-                    alt="Sandeep M S profile photo"
+                    src={heroProfile.avatar}
+                    alt={`${heroProfile.name} profile photo`}
                     fill
                     className="object-cover"
                     sizes="64px"
@@ -104,37 +103,25 @@ export function Hero() {
                 </div>
                 <div>
                   <p className="text-sm text-slate-300">Profile</p>
-                  <p className="text-lg font-semibold text-white">
-                    Sandeep M S
-                  </p>
-                  <p className="text-xs text-cyan-100/90">
-                    Full Stack & AI Platform Engineer
-                  </p>
+                  <p className="text-lg font-semibold text-white">{heroProfile.name}</p>
+                  <p className="text-xs text-cyan-100/90">{heroProfile.title}</p>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-300">At a glance</p>
-                  <p className="text-lg font-semibold text-white">
-                    Product Engineer @ Turbostart
-                  </p>
-                  <p className="text-sm text-cyan-100/90">2025 – Present</p>
+                  <p className="text-lg font-semibold text-white">{heroProfile.role}</p>
+                  <p className="text-sm text-cyan-100/90">{heroProfile.period}</p>
                 </div>
-                <Badge variant="outline">AI Platforms</Badge>
+                <Badge variant="outline">{heroProfile.tag}</Badge>
               </div>
               <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-300">
-                    Software Engineer
-                  </span>
-                  <span className="text-sm text-white">2023 – 2025</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-300">Experience</span>
-                  <span className="text-sm font-semibold text-white">
-                    3+ years
-                  </span>
-                </div>
+                {heroProfile.stats.map((stat) => (
+                  <div key={stat.label} className="flex items-center justify-between">
+                    <span className="text-sm text-slate-300">{stat.label}</span>
+                    <span className="text-sm font-semibold text-white">{stat.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </Card>

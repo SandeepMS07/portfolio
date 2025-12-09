@@ -226,3 +226,47 @@ export const heroHighlights = [
   "Real-time sports tech (T20 Mumbai)",
   "Enterprise auth, billing & licensing (AuraML)",
 ];
+
+export const heroContent = {
+  badge: "Full Stack · AI Platforms",
+  heading: "Sandeep M S — Full Stack & AI Platform Engineer",
+  subheading: "FastAPI • Next.js • Ionic • Multi-Tenant SaaS • AI Voice & Chat Bots • Real-Time Systems",
+  ctaProjects: "/projects",
+  ctaResume: "/resume.pdf",
+};
+
+export const heroProfile = {
+  name: "Sandeep M S",
+  title: "Full Stack & AI Platform Engineer",
+  role: "Product Engineer @ Turbostart",
+  period: "2025 – Present",
+  tag: "AI Platforms",
+  avatar: "/profile.jpeg",
+  stats: [
+    { label: "Software Engineer", value: "2023 – 2025" },
+    { label: "Experience", value: "3+ years" },
+  ],
+};
+
+export const homeSnapshot = {
+  label: "Snapshot",
+  title: "Full Stack & AI Platform Engineer",
+  description:
+    "Building multi-tenant SaaS, AI voice/chat systems, and mobile experiences with a production-first mindset.",
+  tags: ["3+ years", "Turbostart", "Bengaluru"],
+};
+
+export const homeFocusAreas = {
+  label: "Focus Areas",
+  items: [
+    "AI voice/chat agents (Ultravox, Plivo, Gemini)",
+    "Multi-tenant SaaS with auth, billing, licensing",
+    "Real-time systems & mobile apps (Ionic)",
+  ],
+};
+
+export const homeAvailability = {
+  label: "Let’s work",
+  title: "Available for backend / full-stack / AI platform roles",
+  description: "Quick turnarounds on proof-of-concepts and production rollouts.",
+};
