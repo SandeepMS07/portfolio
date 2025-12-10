@@ -219,6 +219,37 @@ export const experiences: ExperienceItem[] = [
       "Shipped portals for Ideabaaz (ZeeTV), Scout by TS, Alumni Management, Startup Portal, and more.",
     ],
   },
+  {
+    company: "LearnCab (Nulurn Edutech Private Limited)",
+    title: "Software Engineer",
+    period: "May 2022 – Aug 2023",
+    location: "Bengaluru, India",
+    highlights: [
+      "Built and maintained learner-facing React/Node services with performant UI and robust APIs.",
+      "Improved reliability and observability across web surfaces while shipping new content features.",
+      "Collaborated with product/design to streamline onboarding and engagement funnels.",
+    ],
+  },
+  {
+    company: "LearnCab (Nulurn Edutech Private Limited)",
+    title: "Software Engineer Intern",
+    period: "Mar 2022 – May 2022",
+    location: "Bengaluru, India",
+    highlights: [
+      "Contributed to React UI components and internal tooling with clean, reusable patterns.",
+      "Implemented QA fixes and performance tweaks across web flows.",
+    ],
+  },
+  {
+    company: "Gofo Technologies",
+    title: "Intern",
+    period: "Jun 2019 – Aug 2019",
+    location: "Bengaluru North, India",
+    highlights: [
+      "Supported web feature delivery and testing, gaining hands-on experience with production codebases.",
+      "Assisted in debugging, documentation, and small UI enhancements.",
+    ],
+  },
 ];
 
 export const heroHighlights = [

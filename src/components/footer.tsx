@@ -7,9 +7,7 @@ export function Footer() {
   return (
     <footer className="border-t border-slate-800 bg-slate-950/80 py-6 text-center text-sm text-slate-400">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-3 px-4 sm:flex-row sm:justify-between sm:px-6 lg:px-8">
-        <span>
-          © {year} Sandeep MS · Built with Next.js &amp; TailwindCSS
-        </span>
+        <span>© {year} Sandeep M S</span>
         <div className="flex items-center gap-3 text-slate-300">
           <Link
             href="https://www.linkedin.com"
