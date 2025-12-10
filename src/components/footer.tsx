@@ -10,16 +10,20 @@ export function Footer() {
         <span>© {year} Sandeep M S</span>
         <div className="flex items-center gap-3 text-slate-300">
           <Link
-            href="https://www.linkedin.com"
+            href="https://www.linkedin.com/in/sandeep-m-s-bb99b5189/"
             className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 transition hover:border-cyan-400/40 hover:text-white"
             aria-label="LinkedIn"
+            target="_blank"
+            rel="noreferrer noopener"
           >
             <Linkedin className="h-4 w-4" />
           </Link>
           <Link
-            href="https://github.com"
+            href="https://github.com/SandeepMS07"
             className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 transition hover:border-cyan-400/40 hover:text-white"
             aria-label="GitHub"
+            target="_blank"
+            rel="noreferrer noopener"
           >
             <Github className="h-4 w-4" />
           </Link>
