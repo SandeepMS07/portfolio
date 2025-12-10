@@ -15,30 +15,34 @@ export default function ContactPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <Card className="space-y-4">
           <p className="text-slate-200">
-            Reach out directly for collaborations, product engineering leadership, or AI platform
-            builds. I respond quickly with next steps.
+            Reach out directly for collaborations, product engineering
+            leadership, or AI platform builds. I respond quickly with next
+            steps.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild>
-              <Link href="mailto:hello@sandeepms.dev">
+              <Link href="mailto:sandeepms.work@gmail.com" target="_blank">
                 <Mail className="h-4 w-4" />
                 Email
               </Link>
             </Button>
             <Button variant="ghost" asChild>
-              <Link href="tel:+9100000000">
+              <Link href="tel:+919590387494" target="_blank">
                 <Phone className="h-4 w-4" />
                 Call
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="https://www.linkedin.com">
+              <Link
+                href="https://www.linkedin.com/in/sandeep-m-s-bb99b5189/"
+                target="_blank"
+              >
                 <Linkedin className="h-4 w-4" />
                 LinkedIn
               </Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="https://github.com">
+              <Link href="https://github.com/SandeepMS07" target="_blank">
                 <Github className="h-4 w-4" />
                 GitHub
               </Link>
