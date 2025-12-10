@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
@@ -10,15 +10,55 @@ export function ContactForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [status, setStatus] = useState<"idle" | "sent">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
+    "idle",
+  );
+  const [error, setError] = useState("");
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const resetStatus = () => {
+    if (status !== "idle") {
+      setStatus("idle");
+      setError("");
+    }
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log({ name, email, message });
-    setStatus("sent");
-    setName("");
-    setEmail("");
-    setMessage("");
+
+    if (status === "sending") {
+      return;
+    }
+
+    setStatus("sending");
+    setError("");
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        const message =
+          data?.error || "Failed to send message. Please try again.";
+        throw new Error(message);
+      }
+
+      setStatus("sent");
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch (err) {
+      console.error(err);
+      setStatus("error");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to send message. Please try again.",
+      );
+    }
   };
 
   return (
@@ -33,7 +73,10 @@ export function ContactForm() {
               id="name"
               name="name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                resetStatus();
+              }}
               placeholder="Your name"
               required
             />
@@ -47,7 +90,10 @@ export function ContactForm() {
               name="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                resetStatus();
+              }}
               placeholder="you@example.com"
               required
             />
@@ -62,15 +108,31 @@ export function ContactForm() {
             name="message"
             rows={4}
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) => {
+              setMessage(e.target.value);
+              resetStatus();
+            }}
             placeholder="What would you like to collaborate on?"
             required
           />
         </div>
-        <div className="flex items-center gap-3">
-          <Button type="submit">Send Message</Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="submit"
+            className="cursor-pointer"
+            disabled={status === "sending"}
+          >
+            {status === "sending" ? "Sending..." : "Send Message"}
+          </Button>
           {status === "sent" ? (
-            <span className="text-sm text-cyan-100">Message sent! I&apos;ll get back soon.</span>
+            <span className="text-sm text-cyan-100" aria-live="polite">
+              Message sent! I&apos;ll get back soon.
+            </span>
+          ) : null}
+          {status === "error" ? (
+            <span className="text-sm text-rose-200" aria-live="polite">
+              {error}
+            </span>
           ) : null}
         </div>
       </form>
