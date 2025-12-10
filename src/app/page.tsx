@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ProjectCard } from "@/components/project-card";
 import { ExperienceCard } from "@/components/experience-card";
 import { SkillCard } from "@/components/skill-card";
+import { Server, Globe2, Smartphone, Bot, ShieldCheck, Container } from "lucide-react";
 import {
   projects,
   experiences,
@@ -17,6 +18,19 @@ import {
 const featuredProjects = projects.filter((p) => p.highlight).slice(0, 3);
 const recentExperience = experiences.slice(0, 2);
 const skillHighlights = skills.slice(0, 3);
+const skillGradients = [
+  "rgba(70, 144, 204, 0.32)",
+  "rgba(116, 90, 183, 0.32)",
+  "rgba(160, 86, 130, 0.32)",
+];
+const skillIcons: Record<string, typeof Server> = {
+  "Backend & APIs": Server,
+  "Frontend & Web": Globe2,
+  Mobile: Smartphone,
+  "AI & Voice": Bot,
+  "Auth & Security": ShieldCheck,
+  "DevOps & Infra": Container,
+};
 
 export default function Home() {
   return (
@@ -109,8 +123,13 @@ export default function Home() {
           </Button>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
-          {skillHighlights.map((category) => (
-            <SkillCard key={category.title} category={category} />
+          {skillHighlights.map((category, index) => (
+            <SkillCard
+              key={category.title}
+              category={category}
+              gradient={skillGradients[index % skillGradients.length]}
+              icon={skillIcons[category.title] ?? Server}
+            />
           ))}
         </div>
       </section>
