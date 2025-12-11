@@ -42,16 +42,17 @@ export function WobbleCard({ children, background, className }: WobbleCardProps)
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 p-4 shadow-xl shadow-cyan-500/10 transition-transform duration-200 ease-out will-change-transform",
+        "relative overflow-hidden rounded-2xl border border-white/10 p-4 shadow-xl shadow-cyan-500/10 transition-transform duration-200 ease-out will-change-transform cursor-pointer",
         className,
       )}
-      style={style}
+      style={{
+        ...style,
+        background,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-90"
-        style={{ background }}
-      />
       <div className="relative">{children}</div>
     </div>
   );

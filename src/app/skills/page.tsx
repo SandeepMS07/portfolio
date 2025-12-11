@@ -3,24 +3,27 @@ import { SkillGrid } from "@/components/skill-card";
 import { Cpu, Workflow, Sparkles } from "lucide-react";
 
 export default function SkillsPage() {
+  const cardBackground =
+    "linear-gradient(135deg, rgba(16, 28, 43, 0.94), rgba(10, 22, 34, 0.94)), url('/skills/pattern-grid.svg')";
+
   const spotlights = [
     {
       title: "Systems built for scale",
       copy: "Multi-tenant backends with crisp observability, queues, and real-time pipes.",
       icon: Cpu,
-      gradient: "rgba(70, 144, 204, 0.26)",
+      background: cardBackground,
     },
     {
       title: "AI-first experiences",
       copy: "Voice/chat agents with guardrails, tool-use, and latency-aware UX.",
       icon: Sparkles,
-      gradient: "rgba(147, 112, 255, 0.26)",
+      background: cardBackground,
     },
     {
       title: "Delivery & flow",
       copy: "Developer ergonomics, reusable UI primitives, and production-readiness.",
       icon: Workflow,
-      gradient: "rgba(138, 126, 72, 0.28)",
+      background: cardBackground,
     },
   ];
 
@@ -34,13 +37,13 @@ export default function SkillsPage() {
         {spotlights.map((item) => (
           <div
             key={item.title}
-            className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-950/60 p-4 shadow-lg shadow-cyan-500/10"
+            className="relative overflow-hidden rounded-2xl border border-white/10 p-4 shadow-lg shadow-cyan-500/10"
+            style={{
+              background: item.background,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
           >
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 opacity-90"
-              style={{ background: item.gradient }}
-            />
             <div className="relative space-y-2">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-cyan-100 shadow-inner shadow-cyan-500/20 backdrop-blur">
                 <item.icon className="h-5 w-5" />
