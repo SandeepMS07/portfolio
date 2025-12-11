@@ -18,11 +18,7 @@ import {
 const featuredProjects = projects.filter((p) => p.highlight).slice(0, 3);
 const recentExperience = experiences.slice(0, 2);
 const skillHighlights = skills.slice(0, 3);
-const skillGradients = [
-  "rgba(70, 144, 204, 0.32)",
-  "rgba(116, 90, 183, 0.32)",
-  "rgba(160, 86, 130, 0.32)",
-];
+const skillGradients = ["linear-gradient(145deg, #0a1a2c 0%, #0c2038 45%, #0f2a46 100%)"];
 const skillIcons: Record<string, typeof Server> = {
   "Backend & APIs": Server,
   "Frontend & Web": Globe2,
@@ -129,6 +125,7 @@ export default function Home() {
               category={category}
               gradient={skillGradients[index % skillGradients.length]}
               icon={skillIcons[category.title] ?? Server}
+              maxItems={8}
             />
           ))}
         </div>

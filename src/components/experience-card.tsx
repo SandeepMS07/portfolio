@@ -34,26 +34,14 @@ export function ExperienceCard({ item }: ExperienceCardProps) {
               </p>
             </div>
           </div>
-          <div className="space-y-2 text-sm text-slate-200">
-            {item.highlights.slice(0, 1).map((highlight) => (
-              <div key={highlight} className="flex gap-2">
+          <ul className="space-y-2 text-sm text-slate-200">
+            {item.highlights.slice(0, 2).map((highlight) => (
+              <li key={highlight} className="flex gap-2">
                 <span className="mt-1 h-1.5 w-1.5 rounded-full bg-cyan-400" aria-hidden />
                 <span>{highlight}</span>
-              </div>
+              </li>
             ))}
-            {item.highlights.length > 1 ? (
-              <div className="max-h-0 overflow-hidden transition-[max-height] duration-400 ease-in-out group-hover:max-h-96 group-hover:pt-1">
-                <ul className="space-y-2">
-                  {item.highlights.slice(1).map((highlight) => (
-                    <li key={highlight} className="flex gap-2">
-                      <span className="mt-1 h-1.5 w-1.5 rounded-full bg-cyan-400" aria-hidden />
-                      <span>{highlight}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-          </div>
+          </ul>
         </div>
       </Card>
     </div>

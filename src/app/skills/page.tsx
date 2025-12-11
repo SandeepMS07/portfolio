@@ -3,8 +3,7 @@ import { SkillGrid } from "@/components/skill-card";
 import { Cpu, Workflow, Sparkles } from "lucide-react";
 
 export default function SkillsPage() {
-  const cardBackground =
-    "linear-gradient(135deg, rgba(16, 28, 43, 0.94), rgba(10, 22, 34, 0.94)), url('/skills/pattern-grid.svg')";
+  const cardBackground = "linear-gradient(145deg, #0a1a2c 0%, #0c2038 50%, #0f2a46 100%)";
 
   const spotlights = [
     {

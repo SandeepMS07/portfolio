@@ -1,7 +1,10 @@
 'use client';
 
+'use client';
+
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -17,6 +20,11 @@ const links = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <motion.header
@@ -52,6 +60,38 @@ export function Navbar() {
             );
           })}
         </nav>
+        <button
+          type="button"
+          onClick={() => setOpen((prev) => !prev)}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10 sm:hidden"
+          aria-label={open ? "Close menu" : "Open menu"}
+        >
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
+      <div
+        className={cn(
+          "sm:hidden transition-[max-height,opacity] duration-300 ease-out overflow-hidden border-t border-white/10 bg-slate-950/95 backdrop-blur",
+          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
+        )}
+      >
+        <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 text-sm sm:px-6 lg:px-8">
+          {links.map((link) => {
+            const active = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "rounded-xl px-3 py-3 transition-all duration-200",
+                  active ? "bg-white/10 text-white shadow-inner" : "text-slate-300 hover:bg-white/10",
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </motion.header>
   );
