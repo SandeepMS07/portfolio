@@ -189,7 +189,9 @@ export default function Chatbot() {
                         : "bg-white/5 text-slate-100 border border-white/10"
                     }`}
                   >
-                    <span className="whitespace-pre-wrap">{message.content}</span>
+                    <div className="prose prose-invert prose-sm max-w-none [&>*]:my-0 [&>ul]:my-2 [&>p]:my-1">
+                      {renderMessageContent(message.content)}
+                    </div>
                   </div>
                 </div>
               ))}
