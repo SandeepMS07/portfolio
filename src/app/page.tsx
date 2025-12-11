@@ -2,9 +2,9 @@ import Link from "next/link";
 import { Hero } from "@/components/hero";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ProjectCard } from "@/components/project-card";
 import { ExperienceCard } from "@/components/experience-card";
 import { SkillCard } from "@/components/skill-card";
+import { HoverEffect } from "@/components/ui/card-hover-effect";
 import { Server, Globe2, Smartphone, Bot, ShieldCheck, Container } from "lucide-react";
 import {
   projects,
@@ -84,11 +84,16 @@ export default function Home() {
             <Link href="/projects">See all</Link>
           </Button>
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          {featuredProjects.map((project, index) => (
-            <ProjectCard key={project.title} project={project} index={index} />
-          ))}
-        </div>
+        <HoverEffect
+          items={featuredProjects.map((project) => ({
+            title: project.title,
+            description: project.description,
+            link: project.links[0]?.href ?? "#",
+            linkLabel: project.links[0]?.label ?? "View",
+            role: project.role,
+            tags: project.tags,
+          }))}
+        />
       </section>
 
       <section className="space-y-4">
@@ -101,7 +106,7 @@ export default function Home() {
             <Link href="/experience">View timeline</Link>
           </Button>
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="flex flex-col gap-4">
           {recentExperience.map((item) => (
             <ExperienceCard key={item.title + item.period} item={item} />
           ))}

@@ -16,9 +16,12 @@ type SkillCardProps = {
   category: SkillCategory;
   gradient: string;
   icon: LucideIcon;
+  maxItems?: number;
 };
 
-export function SkillCard({ category, gradient, icon: Icon }: SkillCardProps) {
+export function SkillCard({ category, gradient, icon: Icon, maxItems }: SkillCardProps) {
+  const items = maxItems ? category.items.slice(0, maxItems) : category.items;
+
   return (
     <WobbleCard background={gradient} className="h-full">
       <div className="mb-3 flex items-center gap-3">
@@ -34,7 +37,7 @@ export function SkillCard({ category, gradient, icon: Icon }: SkillCardProps) {
       </div>
       <div className="relative overflow-hidden rounded-xl border border-white/5 bg-black/10 p-3 shadow-inner shadow-cyan-500/10">
         <div className="relative flex flex-wrap gap-2">
-          {category.items.map((item) => (
+          {items.map((item) => (
             <Badge
               key={item}
               variant="secondary"

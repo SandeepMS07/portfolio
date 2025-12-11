@@ -8,7 +8,7 @@ type ExperienceCardProps = {
 
 export function ExperienceCard({ item }: ExperienceCardProps) {
   return (
-    <div className="group relative flex w-full max-w-5xl flex-row gap-6">
+    <div className="group relative flex w-full flex-row gap-6">
       <div className="relative flex flex-col items-center">
         <div className="absolute left-1/2 top-10 h-full w-px -translate-x-1/2 bg-white/12" />
         <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-slate-900/90 text-cyan-50 shadow-[0_0_0_6px_rgba(255,255,255,0.12)] transition group-hover:border-cyan-300/60">
