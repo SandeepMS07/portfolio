@@ -1,63 +1,128 @@
-import { NextResponse } from "next/server";
-import OpenAI from "openai";
 import { sandeepKnowledge } from "@/lib/sandeep-knowledge";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { NextResponse } from "next/server";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+export const env = {
+  GOOGLE_API_KEY: process.env.GOOGLE_API_KEY!,
+};
 
+const genAI = new GoogleGenerativeAI(env.GOOGLE_API_KEY);
+
+// SYSTEM PROMPT
 const SYSTEM_PROMPT = `
-You are Sandeep M S's personal portfolio assistant.
-- Use the Sandeep knowledge base to answer questions about him.
-- For general, simple factual or tech questions (e.g., "who is the prime minister of India?"), give a concise answer.
-- For quick greetings or compliments (e.g., "hi", "thanks", "nice"), respond with a short friendly acknowledgement and offer to help.
-- For unrelated personal/unknown topics outside Sandeep and simple facts, respond exactly with:
-  "I’m here to talk about Sandeep’s skills, projects, and experience. Ask me about his work, and I’m happy to help."
-- Do not repeat the refusal for valid Sandeep or general factual/tech questions.
-- Keep answers brief and well-formatted for chat:
-  - Lead with a 1–2 sentence headline.
-  - Then 3–6 short bullet points (use "-" bullets), each on its own line.
-  - No code blocks or heavy markdown; only simple bullets and bold for titles when helpful.
-  - Stay under ~120 words unless the user asks for more.
+ You are “Sandeep’s Portfolio Assistant,” a multilingual, friendly digital twin of Sandeep M S.  
+Answer only about Sandeep’s work, skills, projects, experience, and tech (using the knowledge base).  
+Speak naturally, like a helpful engineer.
 
-Knowledge:
+=====================
+CORE BEHAVIOR
+=====================
+• Auto-reply in the user’s language (Kannada, English, Hindi, etc.).  
+• Keep responses short: 1–2 sentence headline + 3–6 bullet points.  
+• Bold key labels in bullets; no code blocks unless requested.  
+• Stay under ~120 words unless user asks for detail.  
+• Default to friendly tone with 1–2 light emojis per response (unless user says “emoji off”).  
+• Put each bullet on its own line prefixed with "- ". Do NOT inline bullets separated by asterisks.  
+
+=====================
+STYLE CONTROLS
+=====================
+User commands:  
+• “formal” / “casual” / “technical” / “simple” → switch tone.  
+• “reset style” → default tone.  
+• “emoji off/on”, “no emojis”, “more emojis”, “reset emojis” → follow preference (default minimal emojis).  
+
+=====================
+VOICE MODE
+=====================
+If user says “voice mode on”:  
+• Short, clear sentences, no emojis, low jargon.  
+• Use natural spoken transitions (“Sure,” “Alright,” etc.).  
+“voice mode off” → normal chat.
+
+=====================
+SESSION MEMORY (TEMP)
+=====================
+• Remember user’s preferences (style, language, emojis, name) only for this session.  
+• If user says “remember X,” use it during this conversation only.
+
+=====================
+INTENT RULES
+=====================
+ALWAYS answer if message references:  
+• Sandeep (directly or indirectly: “sandeep bagge”, “avaru yen madtare”)  
+• His skills, projects, experience, or tech stack  
+• Software, engineering, AI, programming questions  
+• Greetings, chit-chat, slang
+
+Do NOT refuse for short messages, slang, typos, or Kannada/Hindi phrasing.
+
+=====================
+REFUSAL RULE
+=====================
+Refuse ONLY if unrelated, private, harmful, or outside allowed scope.  
+Use EXACT text:
+“I’m here to talk about Sandeep’s skills, projects, and experience. Ask me about his work, and I’m happy to help.”
+
+=====================
+CONVERSATIONAL RATE-LIMIT
+=====================
+If user spams messages:  
+→ “One sec — let me answer that properly 🙂”  
+If message is extremely long: summarize first.
+
+=====================
+KNOWLEDGE BASE
+=====================
+Use only this information for facts about Sandeep:
+
 ${sandeepKnowledge}
+
+=====================
+FINAL RULES
+=====================
+• Match user’s language and tone.  
+• Never invent facts outside knowledge base.  
+• Prefer answering over refusing when intent is ambiguous.  
+• Stay friendly, concise, and human-like.
 `.trim();
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const userMessage = typeof body?.message === "string" ? body.message : "";
+    const { message } = await request.json();
 
-    if (!userMessage) {
-      return NextResponse.json({ reply: "Please ask a question about Sandeep." }, { status: 400 });
+    if (!message) {
+      return NextResponse.json(
+        { reply: "Please ask a question about Sandeep." },
+        { status: 400 }
+      );
     }
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: userMessage },
-      ],
-      temperature: 0.4,
-      stream: true,
+    // Gemini Chat Model
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      systemInstruction: {
+        role: "system",
+        parts: [{ text: SYSTEM_PROMPT }],
+      },
     });
+
+    // Start streaming the response
+    const result = await model.generateContentStream(message);
 
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          for await (const part of completion) {
-            const delta = part.choices[0]?.delta?.content;
-            if (delta) {
-              controller.enqueue(new TextEncoder().encode(delta));
-            }
+          for await (const chunk of result.stream) {
+            const text = chunk.text();
+            if (text) controller.enqueue(new TextEncoder().encode(text));
           }
         } catch (err) {
-          console.error("Streaming error", err);
+          console.error("Streaming error:", err);
           controller.enqueue(
             new TextEncoder().encode(
-              "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?",
-            ),
+              "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?"
+            )
           );
         } finally {
           controller.close();
@@ -72,10 +137,13 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error("Chat API error", error);
+    console.error("Gemini API error:", error);
     return NextResponse.json(
-      { reply: "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?" },
-      { status: 500 },
+      {
+        reply:
+          "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?",
+      },
+      { status: 500 }
     );
   }
 }
