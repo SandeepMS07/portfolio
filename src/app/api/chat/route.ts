@@ -1,11 +1,14 @@
-import { NextResponse } from "next/server";
-import OpenAI from "openai";
 import { sandeepKnowledge } from "@/lib/sandeep-knowledge";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { NextResponse } from "next/server";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+export const env = {
+  GOOGLE_API_KEY: process.env.GOOGLE_API_KEY!,
+};
 
+const genAI = new GoogleGenerativeAI(env.GOOGLE_API_KEY);
+
+// SYSTEM PROMPT
 const SYSTEM_PROMPT = `
  You are “Sandeep’s Portfolio Assistant,” a multilingual, friendly digital twin of Sandeep M S.  
 Answer only about Sandeep’s work, skills, projects, experience, and tech (using the knowledge base).  
@@ -16,8 +19,10 @@ CORE BEHAVIOR
 =====================
 • Auto-reply in the user’s language (Kannada, English, Hindi, etc.).  
 • Keep responses short: 1–2 sentence headline + 3–6 bullet points.  
-• No code blocks unless requested.  
+• Bold key labels in bullets; no code blocks unless requested.  
 • Stay under ~120 words unless user asks for detail.  
+• Default to friendly tone with 1–2 light emojis per response (unless user says “emoji off”).  
+• Put each bullet on its own line prefixed with "- ". Do NOT inline bullets separated by asterisks.  
 
 =====================
 STYLE CONTROLS
@@ -84,37 +89,36 @@ FINAL RULES
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const userMessage = typeof body?.message === "string" ? body.message : "";
+    const { message } = await request.json();
 
-    if (!userMessage) {
+    if (!message) {
       return NextResponse.json(
         { reply: "Please ask a question about Sandeep." },
         { status: 400 }
       );
     }
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: userMessage },
-      ],
-      temperature: 0.4,
-      stream: true,
+    // Gemini Chat Model
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      systemInstruction: {
+        role: "system",
+        parts: [{ text: SYSTEM_PROMPT }],
+      },
     });
+
+    // Start streaming the response
+    const result = await model.generateContentStream(message);
 
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          for await (const part of completion) {
-            const delta = part.choices[0]?.delta?.content;
-            if (delta) {
-              controller.enqueue(new TextEncoder().encode(delta));
-            }
+          for await (const chunk of result.stream) {
+            const text = chunk.text();
+            if (text) controller.enqueue(new TextEncoder().encode(text));
           }
         } catch (err) {
-          console.error("Streaming error", err);
+          console.error("Streaming error:", err);
           controller.enqueue(
             new TextEncoder().encode(
               "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?"
@@ -133,7 +137,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error("Chat API error", error);
+    console.error("Gemini API error:", error);
     return NextResponse.json(
       {
         reply:
