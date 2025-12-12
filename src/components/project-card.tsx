@@ -22,7 +22,7 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
     >
       <Card
         className={cn(
-          "relative h-full cursor-pointer overflow-hidden gap-4 border-white/15 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-slate-950/95 shadow-2xl shadow-cyan-500/10",
+          "relative h-full cursor-pointer overflow-hidden gap-4 border-white/15 bg-linear-to-br from-slate-900/90 via-slate-900/80 to-slate-950/95 shadow-2xl shadow-cyan-500/10",
           project.highlight && "border-cyan-400/40 ring-1 ring-cyan-400/25"
         )}
       >
@@ -60,7 +60,7 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
               <Link
                 key={link.href + link.label}
                 href={link.href}
-                className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:from-cyan-500/35 hover:to-indigo-500/35"
+                className="group inline-flex items-center gap-2 rounded-full bg-linear-to-r from-cyan-500/20 to-indigo-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:from-cyan-500/35 hover:to-indigo-500/35"
               >
                 {link.label}
                 <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

@@ -1,6 +1,12 @@
 "use client";
 
-import { memo, useCallback, useEffect, useRef, type CSSProperties } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  type CSSProperties,
+} from "react";
 import { cn } from "@/lib/utils";
 import { animate } from "framer-motion";
 
@@ -55,7 +61,10 @@ const GlowingEffect = memo(
           }
 
           const center = [left + width * 0.5, top + height * 0.5];
-          const distanceFromCenter = Math.hypot(mouseX - center[0], mouseY - center[1]);
+          const distanceFromCenter = Math.hypot(
+            mouseX - center[0],
+            mouseY - center[1]
+          );
           const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone;
 
           const isActive =
@@ -64,13 +73,19 @@ const GlowingEffect = memo(
             mouseY > top - proximity &&
             mouseY < top + height + proximity;
 
-          element.style.setProperty("--active", isActive ? "1" : glow ? "0.35" : "0");
+          element.style.setProperty(
+            "--active",
+            isActive ? "1" : glow ? "0.35" : "0"
+          );
 
           if (!isActive) return;
 
-          const currentAngle = parseFloat(element.style.getPropertyValue("--start")) || 0;
+          const currentAngle =
+            parseFloat(element.style.getPropertyValue("--start")) || 0;
           let targetAngle =
-            (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) / Math.PI + 90;
+            (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) /
+              Math.PI +
+            90;
 
           const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
           const newAngle = currentAngle + angleDiff;
@@ -84,21 +99,26 @@ const GlowingEffect = memo(
           });
         });
       },
-      [inactiveZone, proximity, movementDuration],
+      [inactiveZone, proximity, movementDuration]
     );
 
     useEffect(() => {
       if (disabled) return;
 
       if (containerRef.current) {
-        containerRef.current.style.setProperty("--active", glow ? "0.35" : "0.6");
+        containerRef.current.style.setProperty(
+          "--active",
+          glow ? "0.35" : "0.6"
+        );
       }
 
       const handleScroll = () => handleMove();
       const handlePointerMove = (e: PointerEvent) => handleMove(e);
 
       window.addEventListener("scroll", handleScroll, { passive: true });
-      document.body.addEventListener("pointermove", handlePointerMove, { passive: true });
+      document.body.addEventListener("pointermove", handlePointerMove, {
+        passive: true,
+      });
 
       return () => {
         if (animationFrameRef.current) {
@@ -116,7 +136,7 @@ const GlowingEffect = memo(
             "pointer-events-none absolute -inset-px hidden rounded-[inherit] border opacity-0 transition-opacity",
             glow && "opacity-100",
             variant === "white" && "border-white",
-            disabled && "!block",
+            disabled && "block!"
           )}
         />
         <div
@@ -154,9 +174,9 @@ const GlowingEffect = memo(
           className={cn(
             "pointer-events-none absolute inset-0 rounded-[inherit] opacity-100 transition-opacity",
             glow && "opacity-100",
-            blur > 0 && "blur-[var(--blur)]",
+            blur > 0 && "blur-(--blur)",
             className,
-            disabled && "!hidden",
+            disabled && "hidden!"
           )}
         >
           <div
@@ -170,13 +190,13 @@ const GlowingEffect = memo(
               "after:[mix-blend-mode:screen]",
               "after:[mask-clip:padding-box,border-box]",
               "after:[mask-composite:intersect]",
-              "after:[mask-image:linear-gradient(#0000,#0000),conic-gradient(from_calc((var(--start)-var(--spread))*1deg),#00000000_0deg,#fff,#00000000_calc(var(--spread)*2deg))]",
+              "after:[mask-image:linear-gradient(#0000,#0000),conic-gradient(from_calc((var(--start)-var(--spread))*1deg),#00000000_0deg,#fff,#00000000_calc(var(--spread)*2deg))]"
             )}
           />
         </div>
       </>
     );
-  },
+  }
 );
 
 GlowingEffect.displayName = "GlowingEffect";

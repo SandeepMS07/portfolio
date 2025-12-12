@@ -2,9 +2,18 @@ import { PageHeader } from "@/components/page-header";
 import { Card } from "@/components/ui/card";
 
 const highlights = [
-  { title: "9+ yrs", body: "Product engineering across AI, SaaS, and realtime systems." },
-  { title: "AI Voice/Chat", body: "Conversational platforms, speech-to-text, agentic workflows." },
-  { title: "Reliability", body: "Multi-tenant, authz-heavy backends with crisp observability." },
+  {
+    title: "9+ yrs",
+    body: "Product engineering across AI, SaaS, and realtime systems.",
+  },
+  {
+    title: "AI Voice/Chat",
+    body: "Conversational platforms, speech-to-text, agentic workflows.",
+  },
+  {
+    title: "Reliability",
+    body: "Multi-tenant, authz-heavy backends with crisp observability.",
+  },
 ];
 
 const focusAreas = [
@@ -43,9 +52,10 @@ export default function AboutPage() {
               Product-first AI & Systems
             </div>
             <p className="text-base text-slate-200 leading-relaxed">
-              I build AI-driven, multi-tenant SaaS platforms that blend FastAPI backends, Next.js
-              frontends, and Ionic mobile experiences. My work centers on resilient chat/voice
-              agents, realtime collaboration, and enterprise-grade authentication—shipping with a
+              I build AI-driven, multi-tenant SaaS platforms that blend FastAPI
+              backends, Next.js frontends, and Ionic mobile experiences. My work
+              centers on resilient chat/voice agents, realtime collaboration,
+              and enterprise-grade authentication—shipping with a
               production-first mindset.
             </p>
             <div className="grid gap-3 sm:grid-cols-3">
@@ -54,19 +64,24 @@ export default function AboutPage() {
                   key={item.title}
                   className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-lg shadow-cyan-500/5 backdrop-blur"
                 >
-                  <div className="text-lg font-semibold text-white">{item.title}</div>
+                  <div className="text-lg font-semibold text-white">
+                    {item.title}
+                  </div>
                   <p className="text-sm text-slate-300">{item.body}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <Card className="space-y-3 border-white/10 bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-cyan-900/30 shadow-cyan-500/10">
+          <Card className="space-y-3 border-white/10 bg-linear-to-br from-slate-900/80 via-slate-900/60 to-cyan-900/30 shadow-cyan-500/10">
             <h3 className="text-lg font-semibold text-white">Current focus</h3>
             <ul className="space-y-2 text-sm text-slate-200">
               {currentFocus.map((item) => (
                 <li key={item} className="flex gap-2">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
+                  <span
+                    className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400"
+                    aria-hidden
+                  />
                   <span>{item}</span>
                 </li>
               ))}
@@ -81,7 +96,10 @@ export default function AboutPage() {
           <ul className="space-y-2 text-sm text-slate-300">
             {focusAreas.map((item) => (
               <li key={item} className="flex gap-2">
-                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-cyan-400" aria-hidden />
+                <span
+                  className="mt-1 h-1.5 w-1.5 rounded-full bg-cyan-400"
+                  aria-hidden
+                />
                 <span>{item}</span>
               </li>
             ))}
@@ -89,11 +107,16 @@ export default function AboutPage() {
         </Card>
 
         <Card className="space-y-3 border-white/10 bg-slate-950/70 shadow-cyan-500/10">
-          <h3 className="text-lg font-semibold text-white">Engineering values</h3>
+          <h3 className="text-lg font-semibold text-white">
+            Engineering values
+          </h3>
           <ul className="space-y-2 text-sm text-slate-300">
             {values.map((item) => (
               <li key={item} className="flex gap-2">
-                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
+                <span
+                  className="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400"
+                  aria-hidden
+                />
                 <span>{item}</span>
               </li>
             ))}

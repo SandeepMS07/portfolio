@@ -11,7 +11,7 @@ import { Card } from "./ui/card";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-950 p-6 shadow-2xl shadow-cyan-500/10 sm:p-10">
+    <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-linear-to-br from-slate-900 via-slate-950 to-slate-950 p-6 shadow-2xl shadow-cyan-500/10 sm:p-10">
       <motion.div
         className="pointer-events-none absolute inset-0 opacity-50"
         initial={{ opacity: 0 }}
@@ -49,9 +49,7 @@ export function Hero() {
             <h1 className="text-4xl font-semibold leading-tight text-white sm:text-5xl">
               {heroContent.heading}
             </h1>
-            <p className="text-lg text-slate-300">
-              {heroContent.subheading}
-            </p>
+            <p className="text-lg text-slate-300">{heroContent.subheading}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Button asChild>
@@ -88,7 +86,7 @@ export function Hero() {
           transition={{ delay: 0.15, duration: 0.5 }}
         >
           <Card className="relative overflow-hidden border-white/10 bg-slate-900/80">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-indigo-500/10" />
+            <div className="absolute inset-0 bg-linear-to-br from-cyan-500/10 via-transparent to-indigo-500/10" />
             <div className="relative space-y-4">
               <div className="flex items-center gap-3">
                 <div className="relative h-16 w-16 overflow-hidden rounded-2xl border border-white/15">
@@ -103,23 +101,36 @@ export function Hero() {
                 </div>
                 <div>
                   <p className="text-sm text-slate-300">Profile</p>
-                  <p className="text-lg font-semibold text-white">{heroProfile.name}</p>
-                  <p className="text-xs text-cyan-100/90">{heroProfile.title}</p>
+                  <p className="text-lg font-semibold text-white">
+                    {heroProfile.name}
+                  </p>
+                  <p className="text-xs text-cyan-100/90">
+                    {heroProfile.title}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-300">At a glance</p>
-                  <p className="text-lg font-semibold text-white">{heroProfile.role}</p>
-                  <p className="text-sm text-cyan-100/90">{heroProfile.period}</p>
+                  <p className="text-lg font-semibold text-white">
+                    {heroProfile.role}
+                  </p>
+                  <p className="text-sm text-cyan-100/90">
+                    {heroProfile.period}
+                  </p>
                 </div>
                 <Badge variant="outline">{heroProfile.tag}</Badge>
               </div>
               <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
                 {heroProfile.stats.map((stat) => (
-                  <div key={stat.label} className="flex items-center justify-between">
+                  <div
+                    key={stat.label}
+                    className="flex items-center justify-between"
+                  >
                     <span className="text-sm text-slate-300">{stat.label}</span>
-                    <span className="text-sm font-semibold text-white">{stat.value}</span>
+                    <span className="text-sm font-semibold text-white">
+                      {stat.value}
+                    </span>
                   </div>
                 ))}
               </div>

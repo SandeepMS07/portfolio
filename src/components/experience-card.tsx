@@ -15,9 +15,9 @@ export function ExperienceCard({ item }: ExperienceCardProps) {
           <BriefcaseBusiness className="h-5 w-5" />
         </div>
       </div>
-      <Card className="relative w-full cursor-pointer overflow-hidden border border-white/10 bg-gradient-to-br from-slate-900/90 via-slate-900/80 to-slate-950/90 shadow-2xl shadow-cyan-500/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:border-cyan-400/35 group-hover:shadow-cyan-500/20">
+      <Card className="relative w-full cursor-pointer overflow-hidden border border-white/10 bg-linear-to-br from-slate-900/90 via-slate-900/80 to-slate-950/90 shadow-2xl shadow-cyan-500/10 transition-all duration-300 group-hover:-translate-y-1 group-hover:border-cyan-400/35 group-hover:shadow-cyan-500/20">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.08),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(129,140,248,0.08),transparent_30%)] opacity-70 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="pointer-events-none absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-6 bottom-0 h-px bg-linear-to-r from-transparent via-cyan-400/25 to-transparent" />
         <div className="relative flex flex-col gap-3 p-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div className="space-y-1">
@@ -37,7 +37,10 @@ export function ExperienceCard({ item }: ExperienceCardProps) {
           <ul className="space-y-2 text-sm text-slate-200">
             {item.highlights.slice(0, 2).map((highlight) => (
               <li key={highlight} className="flex gap-2">
-                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-cyan-400" aria-hidden />
+                <span
+                  className="mt-1 h-1.5 w-1.5 rounded-full bg-cyan-400"
+                  aria-hidden
+                />
                 <span>{highlight}</span>
               </li>
             ))}

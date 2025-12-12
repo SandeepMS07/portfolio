@@ -19,7 +19,12 @@ type SkillCardProps = {
   maxItems?: number;
 };
 
-export function SkillCard({ category, gradient, icon: Icon, maxItems }: SkillCardProps) {
+export function SkillCard({
+  category,
+  gradient,
+  icon: Icon,
+  maxItems,
+}: SkillCardProps) {
   const items = maxItems ? category.items.slice(0, maxItems) : category.items;
 
   return (
@@ -43,7 +48,7 @@ export function SkillCard({ category, gradient, icon: Icon, maxItems }: SkillCar
               variant="secondary"
               className={cn(
                 "bg-white/10 text-slate-100 shadow-sm shadow-cyan-500/10 backdrop-blur",
-                "hover:-translate-y-[1px] hover:bg-white/15 transition duration-150",
+                "hover:-translate-y-px hover:bg-white/15 transition duration-150"
               )}
             >
               {item}

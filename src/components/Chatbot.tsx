@@ -186,7 +186,7 @@ export default function Chatbot() {
     if (!trimmed || loading) return;
 
     const nextMessages: Message[] = [
-      ...messages,
+      ...messages.slice(-8), // keep last 8 to limit history size
       { role: "user", content: trimmed },
       { role: "assistant", content: "" },
     ];
@@ -251,18 +251,20 @@ export default function Chatbot() {
             typingIntervalRef.current = null;
             return;
           }
-          const step = Math.max(1, Math.min(3, target.length - current.length));
+          const step = Math.max(1, Math.min(2, target.length - current.length));
           const next = target.slice(0, current.length + step);
+          if (next === displayedTextRef.current) return;
           displayedTextRef.current = next;
           setMessages((prev) => {
             const updated = [...prev];
             const lastIndex = updated.length - 1;
             if (lastIndex >= 0 && updated[lastIndex].role === "assistant") {
+              if (updated[lastIndex].content === next) return prev;
               updated[lastIndex] = { role: "assistant", content: next };
             }
             return updated;
           });
-        }, 35);
+        }, 50);
       };
 
       while (true) {
@@ -316,13 +318,13 @@ export default function Chatbot() {
             className={`flex ${isUser ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`relative max-w-[85%] rounded-[24px] px-4 py-3 text-sm leading-relaxed shadow-lg shadow-black/20 ${
+              className={`relative max-w-[85%] rounded-3xl px-4 py-3 text-sm leading-relaxed shadow-lg shadow-black/20 ${
                 isUser
-                  ? "bg-gradient-to-br from-cyan-500 to-indigo-500 text-white"
+                  ? "bg-linear-to-br from-cyan-500 to-indigo-500 text-white"
                   : "bg-white/5 text-slate-100 border border-white/10"
               }`}
             >
-              <div className="prose prose-invert prose-sm max-w-none [&>*]:my-0 [&>ul]:my-2 [&>p]:my-1">
+              <div className="prose prose-invert prose-sm max-w-none *:my-0 [&>ul]:my-2 [&>p]:my-1">
                 {renderMessageContent(message.content)}
               </div>
             </div>
@@ -338,7 +340,7 @@ export default function Chatbot() {
         <button
           type="button"
           onClick={() => setCollapsed(false)}
-          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-indigo-500 text-white shadow-xl shadow-cyan-500/35 ring-1 ring-white/20 transition hover:-translate-y-0.5 hover:shadow-cyan-400/40"
+          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-br from-cyan-500 to-indigo-500 text-white shadow-xl shadow-cyan-500/35 ring-1 ring-white/20 transition hover:-translate-y-0.5 hover:shadow-cyan-400/40"
           aria-label="Open chat"
         >
           <MessageCircle className="h-6 w-6" />
@@ -346,9 +348,9 @@ export default function Chatbot() {
       ) : (
         <div
           ref={panelRef}
-          className="pointer-events-auto w-[calc(100vw-2rem)] max-w-[440px] overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-slate-950/95 via-slate-900/90 to-slate-900/90 backdrop-blur-xl shadow-[0_20px_80px_rgba(0,0,0,0.65)]"
+          className="pointer-events-auto w-[calc(100vw-2rem)] max-w-[440px] overflow-hidden rounded-3xl border border-white/10 bg-linear-to-br from-slate-950/95 via-slate-900/90 to-slate-900/90 backdrop-blur-xl shadow-[0_20px_80px_rgba(0,0,0,0.65)]"
         >
-          <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-gradient-to-r from-slate-950/80 via-slate-900/60 to-slate-900/70 px-4 py-3">
+          <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-linear-to-r from-slate-950/80 via-slate-900/60 to-slate-900/70 px-4 py-3">
             <div className="flex items-center gap-2">
               <span
                 className="flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.6)]"
@@ -368,7 +370,7 @@ export default function Chatbot() {
 
           <div
             ref={listRef}
-            className="relative flex h-[45vh] flex-col gap-3 overflow-y-auto bg-gradient-to-b from-slate-950/70 via-slate-900/60 to-slate-900/80 px-4 py-4"
+            className="relative flex h-[60vh] flex-col gap-3 overflow-y-auto bg-linear-to-b from-slate-950/70 via-slate-900/60 to-slate-900/80 px-4 py-4"
           >
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.05),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(99,102,241,0.06),transparent_35%)]" />
             <div className="relative flex flex-col gap-3">
@@ -387,7 +389,7 @@ export default function Chatbot() {
 
           {listening ? (
             <div className="flex items-center gap-2 px-4 pb-1 text-xs font-semibold text-cyan-100">
-              <div className="flex items-center gap-[6px] rounded-full bg-white/5 px-3 py-2 shadow-inner shadow-black/20 ring-1 ring-white/10 backdrop-blur">
+              <div className="flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-2 shadow-inner shadow-black/20 ring-1 ring-white/10 backdrop-blur">
                 <span className="flex h-2 w-1 rounded-full bg-cyan-300 animate-ping" />
                 <span className="flex h-3 w-1 rounded-full bg-cyan-300 animate-ping [animation-delay:0.15s]" />
                 <span className="flex h-2 w-1 rounded-full bg-cyan-300 animate-ping [animation-delay:0.3s]" />
@@ -421,7 +423,7 @@ export default function Chatbot() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/30 transition hover:from-cyan-400 hover:to-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-cyan-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/30 transition hover:from-cyan-400 hover:to-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
             >
               <Send className="h-4 w-4" />
               <span className="hidden sm:inline">Send</span>

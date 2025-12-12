@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { ShaderMaterial, DoubleSide, Mesh } from "three";
 
 const vertexShader = /* glsl */ `
@@ -94,6 +94,26 @@ function DisplacedSphere() {
 }
 
 export function ThreeBackground() {
+  const [enabled, setEnabled] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = (event?: MediaQueryListEvent) => setEnabled(event ? event.matches : mq.matches);
+
+    update();
+    mq.addEventListener?.("change", update);
+    // Fallback for older Safari
+    mq.addListener?.(update);
+
+    return () => {
+      mq.removeEventListener?.("change", update);
+      mq.removeListener?.(update);
+    };
+  }, []);
+
+  if (!enabled) return null;
+
   return (
     <div className="pointer-events-none absolute inset-0 -z-10 opacity-70">
       <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 18], fov: 45 }} className="h-full w-full">
