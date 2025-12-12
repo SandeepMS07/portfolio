@@ -64,6 +64,8 @@ export default function Chatbot() {
   const [collapsed, setCollapsed] = useState(true);
   const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement | null>(null);
+  const rafIdRef = useRef<number | null>(null);
+  const pendingTextRef = useRef("");
 
   useEffect(() => {
     if (listRef.current) {
@@ -99,31 +101,35 @@ export default function Chatbot() {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let assistantText = "";
+      pendingTextRef.current = "";
+
+      const flushFrame = () => {
+        if (rafIdRef.current !== null) return;
+        rafIdRef.current = requestAnimationFrame(() => {
+          setMessages((prev) => {
+            const updated = [...prev];
+            const lastIndex = updated.length - 1;
+            if (lastIndex >= 0 && updated[lastIndex].role === "assistant") {
+              updated[lastIndex] = { role: "assistant", content: pendingTextRef.current };
+            }
+            return updated;
+          });
+          rafIdRef.current = null;
+        });
+      };
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         assistantText += decoder.decode(value, { stream: true });
-        setMessages((prev) => {
-          const updated = [...prev];
-          const lastIndex = updated.length - 1;
-          if (lastIndex >= 0 && updated[lastIndex].role === "assistant") {
-            updated[lastIndex] = { role: "assistant", content: assistantText };
-          }
-          return updated;
-        });
+        pendingTextRef.current = assistantText;
+        flushFrame();
       }
 
       // Final decode flush
       assistantText += decoder.decode();
-      setMessages((prev) => {
-        const updated = [...prev];
-        const lastIndex = updated.length - 1;
-        if (lastIndex >= 0 && updated[lastIndex].role === "assistant") {
-          updated[lastIndex] = { role: "assistant", content: assistantText || updated[lastIndex].content };
-        }
-        return updated;
-      });
+      pendingTextRef.current = assistantText || pendingTextRef.current;
+      flushFrame();
     } catch (error) {
       console.error("Chat send error", error);
       setMessages((prev) => {
@@ -139,6 +145,10 @@ export default function Chatbot() {
         return updated;
       });
     } finally {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
       setLoading(false);
     }
   };
