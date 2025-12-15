@@ -340,7 +340,7 @@ export default function Chatbot() {
         <button
           type="button"
           onClick={() => setCollapsed(false)}
-          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-br from-cyan-500 to-indigo-500 text-white shadow-xl shadow-cyan-500/35 ring-1 ring-white/20 transition hover:-translate-y-0.5 hover:shadow-cyan-400/40"
+          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-br from-cyan-500 to-indigo-500 text-white shadow-xl shadow-cyan-500/35 ring-1 ring-white/20 transition hover:-translate-y-0.5 hover:shadow-cyan-400/40 cursor-pointer"
           aria-label="Open chat"
         >
           <MessageCircle className="h-6 w-6" />
