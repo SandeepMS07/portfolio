@@ -369,7 +369,7 @@ export const heroContent = {
   subheading:
     "FastAPI • Next.js • Ionic • Multi-Tenant SaaS • AI Voice & Chat Bots • Real-Time Systems",
   ctaProjects: "/projects",
-  ctaResume: "/resume.pdf",
+  ctaResume: "/sandeep-m-s-resume.pdf",
 };
 
 export const heroProfile = {
