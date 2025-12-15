@@ -59,7 +59,12 @@ export function Hero() {
               </Link>
             </Button>
             <Button variant="ghost" asChild>
-              <a href={heroContent.ctaResume} download target="_blank" rel="noopener noreferrer">
+              <a
+                href={heroContent.ctaResume}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Download Resume
                 <Download className="h-4 w-4" />
               </a>
@@ -119,7 +124,9 @@ export function Hero() {
                     {heroProfile.period}
                   </p>
                 </div>
-                <Badge variant="outline">{heroProfile.tag}</Badge>
+                <Badge variant="outline" style={{ width: "6vw" }}>
+                  {heroProfile.tag}
+                </Badge>
               </div>
               <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
                 {heroProfile.stats.map((stat) => (
