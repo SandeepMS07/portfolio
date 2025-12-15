@@ -59,10 +59,10 @@ export function Hero() {
               </Link>
             </Button>
             <Button variant="ghost" asChild>
-              <Link href={heroContent.ctaResume}>
+              <a href={heroContent.ctaResume} download target="_blank" rel="noopener noreferrer">
                 Download Resume
                 <Download className="h-4 w-4" />
-              </Link>
+              </a>
             </Button>
           </div>
           <div className="flex flex-wrap gap-2">
