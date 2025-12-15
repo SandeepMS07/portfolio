@@ -4,9 +4,10 @@ import { Card } from "./ui/card";
 
 type ExperienceCardProps = {
   item: ExperienceItem;
+  cardfrom?: string;
 };
 
-export function ExperienceCard({ item }: ExperienceCardProps) {
+export function ExperienceCard({ item, cardfrom }: ExperienceCardProps) {
   return (
     <div className="group relative flex w-full flex-row gap-6">
       <div className="relative flex flex-col items-center">
@@ -35,7 +36,10 @@ export function ExperienceCard({ item }: ExperienceCardProps) {
             </div>
           </div>
           <ul className="space-y-2 text-sm text-slate-200">
-            {item.highlights.slice(0, 2).map((highlight) => (
+            {(cardfrom === "Home"
+              ? item.highlights.slice(0, 2)
+              : item.highlights
+            ).map((highlight) => (
               <li key={highlight} className="flex gap-2">
                 <span
                   className="mt-1 h-1.5 w-1.5 rounded-full bg-cyan-400"
