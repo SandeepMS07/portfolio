@@ -60,6 +60,7 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
               <Link
                 key={link.href + link.label}
                 href={link.href}
+                target="_blank"
                 className="group inline-flex items-center gap-2 rounded-full bg-linear-to-r from-cyan-500/20 to-indigo-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:from-cyan-500/35 hover:to-indigo-500/35"
               >
                 {link.label}

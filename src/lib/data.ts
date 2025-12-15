@@ -12,7 +12,13 @@ export type Project = {
   highlight?: boolean;
 };
 
-export const projectFilters = ["All", "AI/Voice", "Mobile", "SaaS/Auth", "Real-time"] as const;
+export const projectFilters = [
+  "All",
+  "AI/Voice",
+  "Mobile",
+  "SaaS/Auth",
+  "Real-time",
+] as const;
 
 export const projects: Project[] = [
   {
@@ -21,7 +27,17 @@ export const projects: Project[] = [
     description:
       "Multi-tenant AI chat and voice platform with FastAPI, MongoDB, SSO/RBAC, observability, and Next.js frontend surfaces.",
     tags: ["AI", "Voice", "FastAPI", "Next.js", "SSO", "RBAC"],
-    links: [{ label: "Demo", href: "#" }],
+    links: [
+      { label: "Demo", href: "https://yourbuddy.gusindia.global/login" },
+      {
+        label: "Android",
+        href: "https://play.google.com/store/apps/details?id=com.gus.yourbuddy",
+      },
+      {
+        label: "iOS",
+        href: "https://apps.apple.com/us/app/your-buddy/id6751635057",
+      },
+    ],
     highlight: true,
   },
   {
@@ -30,7 +46,9 @@ export const projects: Project[] = [
     description:
       "Instant white-labeled bot demo instances—no DevOps—enabling GTM and sales teams to craft tailored AI demos quickly.",
     tags: ["AI", "Next.js", "Automation", "Product"],
-    links: [{ label: "Website", href: "#" }],
+    links: [
+      { label: "Website", href: "https://kai-insights.thekenverse.com/" },
+    ],
     highlight: true,
   },
   {
@@ -39,7 +57,7 @@ export const projects: Project[] = [
     description:
       "Low-latency voice agent combining Ultravox + Plivo + FastAPI + Gemini for natural conversations with streaming.",
     tags: ["AI", "Voice", "FastAPI", "Plivo", "Gemini"],
-    links: [{ label: "Website", href: "#" }],
+    links: [{ label: "Website", href: "https://pichainlabs.com/" }],
   },
   {
     title: "AuraML – Authentication, Billing & ECDSA Licensing",
@@ -47,7 +65,7 @@ export const projects: Project[] = [
     description:
       "Central auth and licensing fabric with multi-realm SSO, Razorpay billing, ECDSA licensing, and RBAC controls.",
     tags: ["SaaS/Auth", "SSO", "RBAC", "Billing"],
-    links: [{ label: "Website", href: "#" }],
+    links: [{ label: "Website", href: "https://auraml.com/" }],
     highlight: true,
   },
   {
@@ -93,7 +111,15 @@ export const projects: Project[] = [
       "Luxury real estate mobile app with personalized inventory and secure backend services.",
     tags: ["Mobile", "Ionic", "Capacitor"],
     links: [
-      { label: "Android", href: "https://play.google.com/store/apps/details?id=com.ken42.realm" },
+      { label: "Website", href: "https://lighthouseluxury.in/" },
+      {
+        label: "iOS",
+        href: "https://apps.apple.com/us/app/realm-wealth/id6743388410",
+      },
+      {
+        label: "Android",
+        href: "https://play.google.com/store/apps/details?id=com.ken42.realm",
+      },
     ],
   },
   {
@@ -103,8 +129,35 @@ export const projects: Project[] = [
       "Jury decision-support PWA/mobile app with offline-first scoring and synchronized results.",
     tags: ["Mobile", "PWA", "SaaS/Auth"],
     links: [
-      { label: "iOS", href: "https://apps.apple.com/us/app/turbostart-jury/id6578451796" },
-      { label: "Android", href: "https://play.google.com/store/apps/details?id=app.turbostart.jury" },
+      {
+        label: "iOS",
+        href: "https://apps.apple.com/us/app/turbostart-jury/id6578451796",
+      },
+      {
+        label: "Android",
+        href: "https://play.google.com/store/apps/details?id=app.turbostart.jury",
+      },
+    ],
+  },
+  {
+    title: "TS Bridge — Angel Investment Platform (Web + Mobile)",
+    role: "Lead Developer | Ionic • React • Node.js • Salesforce • Razorpay",
+    description:
+      "TS Bridge is Turbostart’s angel investment platform designed to democratize startup investing. It helps users explore curated, VC-vetted startups, track investments in real time, and get personalized investment recommendations.",
+    tags: ["Ionic", "React", "Node.js", "Salesforce", "Razorpay"],
+    links: [
+      {
+        label: "Website",
+        href: "https://tsbridge.com/",
+      },
+      {
+        label: "iOS",
+        href: "https://apps.apple.com/us/app/ts-bridge/id6736746954",
+      },
+      {
+        label: "Android",
+        href: "https://play.google.com/store/apps/details?id=com.turbostart.tsbridge",
+      },
     ],
   },
   {
@@ -121,7 +174,7 @@ export const projects: Project[] = [
     description:
       "Connected portals for scouts, alumni, and startups with role-aware dashboards and workflows.",
     tags: ["SaaS/Auth", "RBAC", "Next.js"],
-    links: [{ label: "Website", href: "#" }],
+    links: [{ label: "Website", href: "https://scoutbyts.com/" }],
   },
 ];
 
@@ -174,7 +227,12 @@ export const skills: SkillCategory[] = [
   },
   {
     title: "Mobile",
-    items: ["Ionic React", "Capacitor", "Electron", "App Store & Play Store deployment"],
+    items: [
+      "Ionic React",
+      "Capacitor",
+      "Electron",
+      "App Store & Play Store deployment",
+    ],
   },
   {
     title: "AI & Voice",
@@ -308,7 +366,8 @@ export const heroHighlights = [
 export const heroContent = {
   badge: "Full Stack · AI Platforms",
   heading: "Sandeep M S — Full Stack & AI Platform Engineer",
-  subheading: "FastAPI • Next.js • Ionic • Multi-Tenant SaaS • AI Voice & Chat Bots • Real-Time Systems",
+  subheading:
+    "FastAPI • Next.js • Ionic • Multi-Tenant SaaS • AI Voice & Chat Bots • Real-Time Systems",
   ctaProjects: "/projects",
   ctaResume: "/resume.pdf",
 };
@@ -346,5 +405,6 @@ export const homeFocusAreas = {
 export const homeAvailability = {
   label: "Let’s work",
   title: "Available for backend / full-stack / AI platform roles",
-  description: "Quick turnarounds on proof-of-concepts and production rollouts.",
+  description:
+    "Quick turnarounds on proof-of-concepts and production rollouts.",
 };
