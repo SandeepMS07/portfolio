@@ -124,9 +124,7 @@ export function Hero() {
                     {heroProfile.period}
                   </p>
                 </div>
-                <Badge variant="outline" style={{ width: "6vw" }}>
-                  {heroProfile.tag}
-                </Badge>
+                <Badge variant="outline">{heroProfile.tag}</Badge>
               </div>
               <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
                 {heroProfile.stats.map((stat) => (
