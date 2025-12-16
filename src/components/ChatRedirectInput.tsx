@@ -16,6 +16,7 @@ export function ChatRedirectInput({
   const [value, setValue] = useState("");
   const redirectedRef = useRef(false);
   const isFloating = variant === "floating";
+  const hideOnChat = pathname?.startsWith("/chat");
 
   const handleSubmit = (
     event?: FormEvent | KeyboardEvent<HTMLInputElement>
@@ -28,17 +29,16 @@ export function ChatRedirectInput({
     router.push(`/chat?q=${encodeURIComponent(query)}`);
   };
 
-  if (pathname?.startsWith("/chat")) {
-    return null;
-  }
-
   // Clear the quick input when returning to non-chat pages
   useEffect(() => {
-    if (pathname?.startsWith("/chat")) return;
+    if (hideOnChat) return;
     setValue("");
     redirectedRef.current = false;
-  }, [pathname]);
+  }, [pathname, hideOnChat]);
 
+  if (hideOnChat) {
+    return null;
+  }
   return (
     <form
       onSubmit={handleSubmit}
