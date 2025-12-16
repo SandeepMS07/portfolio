@@ -26,10 +26,8 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (!open) return;
-    const id = requestAnimationFrame(() => setOpen(false));
-    return () => cancelAnimationFrame(id);
-  }, [pathname, open]);
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <motion.header
