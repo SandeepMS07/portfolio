@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { useState, useRef, FormEvent, KeyboardEvent } from "react";
+import { useState, useRef, FormEvent, KeyboardEvent, useEffect } from "react";
 import { MessageCircle } from "lucide-react";
 
 type ChatRedirectInputProps = {
@@ -31,6 +31,13 @@ export function ChatRedirectInput({
   if (pathname?.startsWith("/chat")) {
     return null;
   }
+
+  // Clear the quick input when returning to non-chat pages
+  useEffect(() => {
+    if (pathname?.startsWith("/chat")) return;
+    setValue("");
+    redirectedRef.current = false;
+  }, [pathname]);
 
   return (
     <form
