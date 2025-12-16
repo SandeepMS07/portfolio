@@ -5,7 +5,8 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { BackgroundFX } from "@/components/background";
 import { ThreeBackground } from "@/components/three-background";
-import Chatbot from "@/components/Chatbot";
+import { ChatRedirectInput } from "@/components/ChatRedirectInput";
+import { heroProfile } from "@/lib/data";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,6 +22,11 @@ export const metadata: Metadata = {
   title: "Sandeep M S — Full Stack & AI Platform Engineer",
   description:
     "Portfolio for Sandeep M S showcasing full stack engineering, AI voice/chat bots, multi-tenant SaaS, and mobile builds.",
+  icons: {
+    icon: heroProfile.avatar,
+    shortcut: heroProfile.avatar,
+    apple: heroProfile.avatar,
+  },
 };
 
 export default function RootLayout({
@@ -44,7 +50,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </div>
-        <Chatbot />
+        <ChatRedirectInput />
       </body>
     </html>
   );

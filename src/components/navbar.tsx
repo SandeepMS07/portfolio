@@ -1,13 +1,15 @@
-'use client';
+"use client";
 
-'use client';
+"use client";
 
-import { useEffect, useState } from "react";
+import { heroProfile } from "@/lib/data";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Sparkles, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 const links = [
   { href: "/", label: "Home" },
@@ -15,6 +17,7 @@ const links = [
   { href: "/skills", label: "Skills" },
   { href: "/experience", label: "Experience" },
   { href: "/projects", label: "Projects" },
+  { href: "/chat", label: "Chat" },
   { href: "/contact", label: "Contact" },
 ];
 
@@ -23,8 +26,10 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
+    if (!open) return;
+    const id = requestAnimationFrame(() => setOpen(false));
+    return () => cancelAnimationFrame(id);
+  }, [pathname, open]);
 
   return (
     <motion.header
@@ -35,12 +40,21 @@ export function Navbar() {
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2 text-slate-100">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-cyan-400 text-white shadow-lg shadow-cyan-500/20">
-            <Sparkles className="h-5 w-5" />
+          <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/15 bg-white/5 shadow-lg shadow-cyan-500/20 ring-1 ring-cyan-400/30">
+            <Image
+              src={heroProfile.avatar}
+              alt={`${heroProfile.name} profile`}
+              fill
+              sizes="40px"
+              className="object-cover"
+              priority
+            />
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-sm font-semibold">Sandeep M S</span>
-            <span className="text-xs text-slate-400">Full Stack & AI Platform Engineer</span>
+            <span className="text-xs text-slate-400">
+              Full Stack & AI Platform Engineer
+            </span>
           </div>
         </Link>
         <nav className="hidden items-center gap-2 text-sm sm:flex">
@@ -52,7 +66,9 @@ export function Navbar() {
                 href={link.href}
                 className={cn(
                   "rounded-full px-3 py-2 transition-all duration-300 hover:bg-white/10",
-                  active ? "bg-white/10 text-white shadow-inner" : "text-slate-300",
+                  active
+                    ? "bg-white/10 text-white shadow-inner"
+                    : "text-slate-300"
                 )}
               >
                 {link.label}
@@ -72,7 +88,7 @@ export function Navbar() {
       <div
         className={cn(
           "sm:hidden transition-[max-height,opacity] duration-300 ease-out overflow-hidden border-t border-white/10 bg-slate-950/95 backdrop-blur",
-          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
+          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         )}
       >
         <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 text-sm sm:px-6 lg:px-8">
@@ -84,7 +100,9 @@ export function Navbar() {
                 href={link.href}
                 className={cn(
                   "rounded-xl px-3 py-3 transition-all duration-200",
-                  active ? "bg-white/10 text-white shadow-inner" : "text-slate-300 hover:bg-white/10",
+                  active
+                    ? "bg-white/10 text-white shadow-inner"
+                    : "text-slate-300 hover:bg-white/10"
                 )}
               >
                 {link.label}

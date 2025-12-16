@@ -39,7 +39,7 @@ const skillIcons: Record<string, typeof Server> = {
 
 export default function Home() {
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       <Hero />
 
       <section className="grid gap-4 md:grid-cols-3">

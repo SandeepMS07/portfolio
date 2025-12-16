@@ -380,7 +380,7 @@ export const heroProfile = {
   tag: "AI Platforms",
   avatar: "/profile.jpeg",
   stats: [
-    { label: "Software Engineer", value: "2023 – 2025" },
+    { label: "Software Engineer", value: "2022 – 2025" },
     { label: "Experience", value: "3+ years" },
   ],
 };

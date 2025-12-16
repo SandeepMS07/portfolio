@@ -11,7 +11,7 @@ import { Card } from "./ui/card";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-linear-to-br from-slate-900 via-slate-950 to-slate-950 p-6 shadow-2xl shadow-cyan-500/10 sm:p-10">
+    <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-linear-to-br from-slate-900 via-slate-950 to-slate-950 p-4 shadow-2xl shadow-cyan-500/10 sm:p-10">
       <motion.div
         className="pointer-events-none absolute inset-0 opacity-50"
         initial={{ opacity: 0 }}
@@ -42,23 +42,25 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
-          <Badge variant="primary" className="uppercase tracking-[0.25em]">
+          <Badge variant="primary" className="uppercase tracking-[0.25em] text-xs sm:text-sm">
             {heroContent.badge}
           </Badge>
           <div className="space-y-4">
-            <h1 className="text-4xl font-semibold leading-tight text-white sm:text-5xl">
+            <h1 className="text-3xl font-semibold leading-tight text-white sm:text-5xl">
               {heroContent.heading}
             </h1>
-            <p className="text-lg text-slate-300">{heroContent.subheading}</p>
+            <p className="text-base text-slate-300 sm:text-lg">
+              {heroContent.subheading}
+            </p>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button asChild>
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+            <Button asChild className="w-full justify-center sm:w-auto">
               <Link href={heroContent.ctaProjects}>
                 View Projects
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
-            <Button variant="ghost" asChild>
+            <Button variant="ghost" asChild className="w-full justify-center sm:w-auto">
               <a
                 href={heroContent.ctaResume}
                 download

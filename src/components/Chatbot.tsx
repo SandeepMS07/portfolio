@@ -1,7 +1,19 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { MessageCircle, Send, X, Mic, Square } from "lucide-react";
+
+type ChatbotProps = {
+  mode?: "floating" | "page";
+  initialQuery?: string;
+};
 
 type Message = {
   role: "user" | "assistant";
@@ -93,16 +105,14 @@ function renderMessageContent(content: string) {
   });
 }
 
-export default function Chatbot() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: "assistant",
-      content:
-        "Hey! I’m Sandeep’s assistant. Ask me about his skills, projects, or experience.",
-    },
-  ]);
-  const [input, setInput] = useState("");
-  const [collapsed, setCollapsed] = useState(true);
+export default function Chatbot({
+  mode = "floating",
+  initialQuery = "",
+}: ChatbotProps) {
+  const isPage = mode === "page";
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState(initialQuery);
+  const [collapsed, setCollapsed] = useState(isPage ? false : true);
   const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement | null>(null);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -112,6 +122,12 @@ export default function Chatbot() {
   const recognitionRef = useRef<WebSpeechRecognition | null>(null);
   const [canRecognize, setCanRecognize] = useState(false);
   const [listening, setListening] = useState(false);
+  const autoQueryRef = useRef<string | null>(null);
+
+  // Sync incoming query to input when navigating with ?q=
+  useEffect(() => {
+    setInput(initialQuery);
+  }, [initialQuery]);
 
   useEffect(() => {
     if (listRef.current) {
@@ -120,6 +136,7 @@ export default function Chatbot() {
   }, [messages, collapsed]);
 
   useEffect(() => {
+    if (isPage) return;
     const handleClick = (event: MouseEvent) => {
       if (collapsed) return;
       const panel = panelRef.current;
@@ -129,7 +146,7 @@ export default function Chatbot() {
     };
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
-  }, [collapsed]);
+  }, [collapsed, isPage]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -180,130 +197,147 @@ export default function Chatbot() {
     }
   };
 
-  const sendMessage = async (event?: FormEvent) => {
-    event?.preventDefault();
-    const trimmed = input.trim();
-    if (!trimmed || loading) return;
+  const sendMessage = useCallback(
+    async (event?: FormEvent, override?: string) => {
+      event?.preventDefault();
+      const trimmed = (override ?? input).trim();
+      if (!trimmed || loading) return;
 
-    const nextMessages: Message[] = [
-      ...messages.slice(-8), // keep last 8 to limit history size
-      { role: "user", content: trimmed },
-      { role: "assistant", content: "" },
-    ];
-    setMessages(nextMessages);
-    setInput("");
-    setLoading(true);
-    displayedTextRef.current = "";
-    targetTextRef.current = "";
-    if (typingIntervalRef.current) {
-      clearInterval(typingIntervalRef.current);
-      typingIntervalRef.current = null;
-    }
-
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: trimmed }),
-      });
-
-      const contentType = response.headers.get("content-type") || "";
-
-      // Handle JSON fallback (errors or non-streamed replies)
-      if (!response.ok || contentType.includes("application/json")) {
-        const data = (await response.json().catch(() => null)) as {
-          reply?: string;
-          text?: string;
-        } | null;
-        const reply =
-          data?.reply ||
-          data?.text ||
-          "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?";
-        setMessages((prev) => {
-          const updated = [...prev];
-          const lastIndex = updated.length - 1;
-          if (lastIndex >= 0 && updated[lastIndex].role === "assistant") {
-            updated[lastIndex] = { role: "assistant", content: reply };
-          }
-          return updated;
-        });
-        displayedTextRef.current = reply;
-        targetTextRef.current = reply;
-        setLoading(false);
-        return;
-      }
-
-      if (!response.body) {
-        throw new Error("No response body");
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let assistantText = "";
-
-      const startTypingLoop = () => {
-        if (typingIntervalRef.current) return;
-        typingIntervalRef.current = setInterval(() => {
-          const target = targetTextRef.current;
-          const current = displayedTextRef.current;
-          if (current === target) {
-            clearInterval(typingIntervalRef.current as NodeJS.Timeout);
-            typingIntervalRef.current = null;
-            return;
-          }
-          const step = Math.max(1, Math.min(2, target.length - current.length));
-          const next = target.slice(0, current.length + step);
-          if (next === displayedTextRef.current) return;
-          displayedTextRef.current = next;
-          setMessages((prev) => {
-            const updated = [...prev];
-            const lastIndex = updated.length - 1;
-            if (lastIndex >= 0 && updated[lastIndex].role === "assistant") {
-              if (updated[lastIndex].content === next) return prev;
-              updated[lastIndex] = { role: "assistant", content: next };
-            }
-            return updated;
-          });
-        }, 50);
-      };
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        assistantText += decoder.decode(value, { stream: true });
-        targetTextRef.current = assistantText;
-        startTypingLoop();
-      }
-
-      // Final decode flush
-      assistantText += decoder.decode();
-      targetTextRef.current = assistantText || targetTextRef.current;
-      startTypingLoop();
-    } catch (error) {
-      console.error("Chat send error", error);
-      setMessages((prev) => {
-        const updated = [...prev];
-        const lastIndex = updated.length - 1;
-        if (lastIndex >= 0 && updated[lastIndex].role === "assistant") {
-          updated[lastIndex] = {
-            role: "assistant",
-            content:
-              "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?",
-          };
-        }
-        return updated;
-      });
-      displayedTextRef.current =
-        "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?";
-      targetTextRef.current = displayedTextRef.current;
+      const nextMessages: Message[] = [
+        ...messages.slice(-8), // keep last 8 to limit history size
+        { role: "user", content: trimmed },
+        { role: "assistant", content: "" },
+      ];
+      setMessages(nextMessages);
+      setInput("");
+      setLoading(true);
+      displayedTextRef.current = "";
+      targetTextRef.current = "";
       if (typingIntervalRef.current) {
         clearInterval(typingIntervalRef.current);
         typingIntervalRef.current = null;
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: trimmed }),
+        });
+
+        const contentType = response.headers.get("content-type") || "";
+
+        // Handle JSON fallback (errors or non-streamed replies)
+        if (!response.ok || contentType.includes("application/json")) {
+          const data = (await response.json().catch(() => null)) as {
+            reply?: string;
+            text?: string;
+          } | null;
+          const reply =
+            data?.reply ||
+            data?.text ||
+            "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?";
+          setMessages((prev) => {
+            const updated = [...prev];
+            const lastIndex = updated.length - 1;
+            if (lastIndex >= 0 && updated[lastIndex].role === "assistant") {
+              updated[lastIndex] = { role: "assistant", content: reply };
+            }
+            return updated;
+          });
+          displayedTextRef.current = reply;
+          targetTextRef.current = reply;
+          setLoading(false);
+          return;
+        }
+
+        if (!response.body) {
+          throw new Error("No response body");
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let assistantText = "";
+
+        const startTypingLoop = () => {
+          if (typingIntervalRef.current) return;
+          typingIntervalRef.current = setInterval(() => {
+            const target = targetTextRef.current;
+            const current = displayedTextRef.current;
+            if (current === target) {
+              clearInterval(typingIntervalRef.current as NodeJS.Timeout);
+              typingIntervalRef.current = null;
+              return;
+            }
+            const step = Math.max(
+              1,
+              Math.min(2, target.length - current.length)
+            );
+            const next = target.slice(0, current.length + step);
+            if (next === displayedTextRef.current) return;
+            displayedTextRef.current = next;
+            setMessages((prev) => {
+              const updated = [...prev];
+              const lastIndex = updated.length - 1;
+              if (lastIndex >= 0 && updated[lastIndex].role === "assistant") {
+                if (updated[lastIndex].content === next) return prev;
+                updated[lastIndex] = { role: "assistant", content: next };
+              }
+              return updated;
+            });
+          }, 50);
+        };
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          assistantText += decoder.decode(value, { stream: true });
+          targetTextRef.current = assistantText;
+          startTypingLoop();
+        }
+
+        // Final decode flush
+        assistantText += decoder.decode();
+        targetTextRef.current = assistantText || targetTextRef.current;
+        startTypingLoop();
+      } catch (error) {
+        console.error("Chat send error", error);
+        setMessages((prev) => {
+          const updated = [...prev];
+          const lastIndex = updated.length - 1;
+          if (lastIndex >= 0 && updated[lastIndex].role === "assistant") {
+            updated[lastIndex] = {
+              role: "assistant",
+              content:
+                "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?",
+            };
+          }
+          return updated;
+        });
+        displayedTextRef.current =
+          "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?";
+        targetTextRef.current = displayedTextRef.current;
+        if (typingIntervalRef.current) {
+          clearInterval(typingIntervalRef.current);
+          typingIntervalRef.current = null;
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [input, loading, messages]
+  );
+
+  useEffect(() => {
+    const query = initialQuery.trim();
+    if (!query || autoQueryRef.current === query) return;
+    autoQueryRef.current = query;
+    setInput(query);
+    // Defer send to allow input state to update
+    setTimeout(() => {
+      void sendMessage(undefined, query);
+    }, 0);
+  }, [initialQuery, sendMessage]);
 
   const renderedMessages = useMemo(
     () =>
@@ -334,6 +368,177 @@ export default function Chatbot() {
     [messages]
   );
 
+  const suggestionPrompts = [
+    "Show me Sandeep's top projects.",
+    "What are his core skills and tech stack?",
+    "Summarize Sandeep's experience in 30 seconds.",
+    "Does he have AI/ML or backend strengths?",
+  ];
+  const showSuggestions = messages.length <= 1 && !loading;
+
+  const panel = (
+    <div
+      ref={panelRef}
+      className={`pointer-events-auto relative flex flex-col overflow-hidden rounded-3xl border border-cyan-500/15 bg-slate-950/80 backdrop-blur-2xl shadow-[0_15px_60px_rgba(0,0,0,0.55)] ring-1 ring-white/5 ${
+        isPage
+          ? "w-full h-[70vh] min-h-[420px] max-h-[calc(100vh-220px)]"
+          : "w-[calc(100vw-2rem)] max-w-[440px] h-[60vh]"
+      }`}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(6,182,212,0.12),transparent_32%),radial-gradient(circle_at_80%_0%,rgba(129,140,248,0.14),transparent_35%),radial-gradient(circle_at_30%_80%,rgba(16,185,129,0.12),transparent_40%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0)_18%,rgba(255,255,255,0.04)_36%,rgba(255,255,255,0)_54%,rgba(255,255,255,0.04)_72%,rgba(255,255,255,0)_90%)] opacity-30" />
+      <div className="relative flex items-center justify-between gap-3 border-b border-white/10 bg-linear-to-r from-slate-900/70 via-slate-900/60 to-slate-900/50 px-5 py-4">
+        <div className="flex items-center gap-3">
+          <span
+            className="flex h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.75)] ring-2 ring-emerald-400/20"
+            aria-hidden
+          />
+          <div>
+            <p className="text-sm font-semibold text-white">Chat with me</p>
+            <p className="text-xs text-slate-300/80">
+              Hey! I’m Sandeep’s assistant. Ask me about his skills, projects,
+              or experience.
+            </p>
+          </div>
+        </div>
+        {!isPage && (
+          <button
+            type="button"
+            onClick={() => setCollapsed(true)}
+            className="rounded-full p-1.5 text-slate-300 transition hover:bg-white/10"
+            aria-label="Close chat"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      <div
+        ref={listRef}
+        className="relative flex flex-1 min-h-0 flex-col gap-3 overflow-y-auto bg-linear-to-b from-slate-950/65 via-slate-900/55 to-slate-900/70 px-5 py-5"
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.05),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(99,102,241,0.06),transparent_35%)]" />
+        <div className="relative flex flex-1 flex-col gap-3">
+          {renderedMessages}
+          <div className="mt-auto">
+            {showSuggestions ? (
+              <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-slate-900/70 via-slate-900/60 to-emerald-900/70 px-5 py-5 shadow-xl shadow-black/35 backdrop-blur">
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(14,165,233,0.16),transparent_42%),radial-gradient(circle_at_82%_18%,rgba(16,185,129,0.16),transparent_42%)] opacity-80" />
+                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_18%,rgba(255,255,255,0.08)_36%,rgba(255,255,255,0)_54%,rgba(255,255,255,0.08)_72%,rgba(255,255,255,0)_90%)] opacity-25" />
+
+                <div className="relative space-y-4">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
+                    Quick prompts
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {suggestionPrompts.map((prompt) => (
+                      <button
+                        key={prompt}
+                        type="button"
+                        onClick={() => sendMessage(undefined, prompt)}
+                        className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm text-slate-200 transition hover:border-cyan-400/50 hover:bg-white/10 hover:text-white shadow-inner shadow-black/20 cursor-pointer"
+                      >
+                        <div className="pointer-events-none absolute inset-0 translate-y-full bg-gradient-to-r from-cyan-400/20 via-emerald-400/20 to-indigo-400/20 transition duration-500 group-hover:translate-y-0" />
+                        <span className="relative block">{prompt}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
+          {loading ? (
+            <div className="flex justify-start">
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200 shadow-lg shadow-black/10 backdrop-blur">
+                <span className="h-2 w-2 rounded-full bg-cyan-300 animate-bounce" />
+                <span className="h-2 w-2 rounded-full bg-cyan-300 animate-bounce [animation-delay:0.12s]" />
+                <span className="h-2 w-2 rounded-full bg-cyan-300 animate-bounce [animation-delay:0.24s]" />
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      {listening ? (
+        <div className="px-5 pb-3">
+          <div className="relative overflow-hidden rounded-3xl border border-emerald-400/25 bg-gradient-to-b from-slate-950/90 via-slate-950/85 to-emerald-950/70 px-5 py-6 shadow-[0_20px_60px_rgba(16,185,129,0.25)] backdrop-blur">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(52,211,153,0.25),transparent_50%),radial-gradient(circle_at_80%_10%,rgba(16,185,129,0.24),transparent_45%)] opacity-75" />
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0)_18%,rgba(255,255,255,0.1)_36%,rgba(255,255,255,0)_54%,rgba(255,255,255,0.1)_72%,rgba(255,255,255,0)_90%)] opacity-20" />
+
+            <div className="relative flex flex-col items-center gap-6 text-center">
+              <p className="text-sm font-semibold text-emerald-100">
+                Listening…
+              </p>
+
+              <div className="relative h-32 w-32 perspective-[900px] sm:h-36 sm:w-36">
+                <div className="absolute inset-0 animate-[spin_18s_linear_infinite] rounded-full bg-[conic-gradient(from_140deg,#0ea5e9_0%,#22c55e_20%,#0ea5e9_45%,#16a34a_70%,#0ea5e9_100%)] blur-[3px] opacity-70" />
+                <div className="absolute inset-[6%] rounded-full bg-[radial-gradient(circle_at_40%_40%,rgba(255,255,255,0.32),rgba(16,185,129,0.25),rgba(0,0,0,0.55))]" />
+                <div className="absolute inset-[14%] rounded-full bg-[radial-gradient(circle_at_70%_25%,rgba(255,255,255,0.4),transparent_55%)] opacity-90" />
+                <div className="absolute inset-[4%] rounded-full bg-[radial-gradient(circle_at_25%_25%,rgba(255,255,255,0.25),transparent_45%),radial-gradient(circle_at_70%_70%,rgba(14,165,233,0.25),transparent_55%)] mix-blend-screen opacity-80" />
+                <div className="absolute inset-[10%] rounded-full bg-gradient-to-br from-white/15 via-emerald-400/10 to-transparent opacity-70 [transform:rotateX(16deg)_rotateY(-12deg)]" />
+                <div className="absolute inset-0 rounded-full shadow-[0_0_36px_rgba(16,185,129,0.6)]" />
+                <div className="absolute inset-0 animate-[orbPulse_3s_ease-in-out_infinite] rounded-full bg-emerald-400/10 blur-xl" />
+              </div>
+
+              <p className="text-sm leading-relaxed text-slate-200/90">
+                {input.trim()
+                  ? `“${input}”`
+                  : "Tell me your question and I’ll send it."}
+              </p>
+
+              <button
+                type="button"
+                onClick={toggleListening}
+                className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 shadow-lg shadow-emerald-500/40 transition hover:scale-[1.02] hover:shadow-emerald-400/45 cursor-pointer"
+              >
+                Stop listening
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <form
+        onSubmit={sendMessage}
+        className="relative flex items-center gap-2 border-t border-white/10 bg-slate-950/85 px-4 py-3"
+      >
+        <div className="pointer-events-none absolute -top-6 left-8 h-12 w-12 rounded-full bg-cyan-500/20 blur-3xl" />
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="flex-1 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 transition focus:border-cyan-400 focus:outline-none focus:shadow-[0_10px_40px_rgba(6,182,212,0.25)] backdrop-blur"
+          placeholder="Ask about Sandeep’s experience..."
+        />
+        <button
+          type="button"
+          onClick={toggleListening}
+          disabled={!canRecognize || loading}
+          className="inline-flex items-center justify-center gap-1 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-100 shadow-inner shadow-black/10 transition hover:border-cyan-300/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+        >
+          {listening ? (
+            <Square className="h-4 w-4" />
+          ) : (
+            <Mic className="h-4 w-4" />
+          )}
+        </button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-cyan-500 via-sky-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/30 transition hover:-translate-y-0.5 hover:shadow-blue-500/35 disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer"
+        >
+          <Send className="h-4 w-4" />
+          <span className="hidden sm:inline">Send</span>
+        </button>
+      </form>
+    </div>
+  );
+
+  if (isPage) {
+    return <div className="relative w-full">{panel}</div>;
+  }
+
   return (
     <div className="pointer-events-none fixed bottom-4 right-4 z-50 flex flex-col items-end">
       {collapsed ? (
@@ -346,90 +551,7 @@ export default function Chatbot() {
           <MessageCircle className="h-6 w-6" />
         </button>
       ) : (
-        <div
-          ref={panelRef}
-          className="pointer-events-auto w-[calc(100vw-2rem)] max-w-[440px] overflow-hidden rounded-3xl border border-white/10 bg-linear-to-br from-slate-950/95 via-slate-900/90 to-slate-900/90 backdrop-blur-xl shadow-[0_20px_80px_rgba(0,0,0,0.65)]"
-        >
-          <div className="flex items-center justify-between gap-3 border-b border-white/10 bg-linear-to-r from-slate-950/80 via-slate-900/60 to-slate-900/70 px-4 py-3">
-            <div className="flex items-center gap-2">
-              <span
-                className="flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.6)]"
-                aria-hidden
-              />
-              <p className="text-sm font-semibold text-white">Chat with me</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setCollapsed(true)}
-              className="rounded-full p-1 text-slate-300 transition hover:bg-white/10"
-              aria-label="Close chat"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-
-          <div
-            ref={listRef}
-            className="relative flex h-[60vh] flex-col gap-3 overflow-y-auto bg-linear-to-b from-slate-950/70 via-slate-900/60 to-slate-900/80 px-4 py-4"
-          >
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.05),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(99,102,241,0.06),transparent_35%)]" />
-            <div className="relative flex flex-col gap-3">
-              {renderedMessages}
-              {loading ? (
-                <div className="flex justify-start">
-                  <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200 shadow-lg shadow-black/10 backdrop-blur">
-                    <span className="h-2 w-2 rounded-full bg-cyan-300 animate-bounce" />
-                    <span className="h-2 w-2 rounded-full bg-cyan-300 animate-bounce [animation-delay:0.12s]" />
-                    <span className="h-2 w-2 rounded-full bg-cyan-300 animate-bounce [animation-delay:0.24s]" />
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          {listening ? (
-            <div className="flex items-center gap-2 px-4 pb-1 text-xs font-semibold text-cyan-100">
-              <div className="flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-2 shadow-inner shadow-black/20 ring-1 ring-white/10 backdrop-blur">
-                <span className="flex h-2 w-1 rounded-full bg-cyan-300 animate-ping" />
-                <span className="flex h-3 w-1 rounded-full bg-cyan-300 animate-ping [animation-delay:0.15s]" />
-                <span className="flex h-2 w-1 rounded-full bg-cyan-300 animate-ping [animation-delay:0.3s]" />
-                <span className="ml-2">Listening…</span>
-              </div>
-            </div>
-          ) : null}
-
-          <form
-            onSubmit={sendMessage}
-            className="flex items-center gap-2 border-t border-white/10 bg-slate-950/80 px-3 py-3"
-          >
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className="flex-1 rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:border-cyan-500 focus:outline-none backdrop-blur"
-              placeholder="Ask about Sandeep’s experience..."
-            />
-            <button
-              type="button"
-              onClick={toggleListening}
-              disabled={!canRecognize || listening || loading}
-              className="inline-flex items-center justify-center gap-1 rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-100 shadow-inner shadow-black/10 transition hover:border-cyan-400/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {listening ? (
-                <Square className="h-4 w-4" />
-              ) : (
-                <Mic className="h-4 w-4" />
-              )}
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-cyan-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/30 transition hover:from-cyan-400 hover:to-indigo-400 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              <Send className="h-4 w-4" />
-              <span className="hidden sm:inline">Send</span>
-            </button>
-          </form>
-        </div>
+        panel
       )}
     </div>
   );
