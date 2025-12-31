@@ -219,10 +219,15 @@ export default function Chatbot({
       }
 
       try {
+        const historyForApi = nextMessages
+          .slice(0, -1) // drop the empty assistant placeholder
+          .filter((msg) => msg.content.trim() !== "")
+          .slice(-10);
+
         const response = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: trimmed }),
+          body: JSON.stringify({ message: trimmed, history: historyForApi }),
         });
 
         const contentType = response.headers.get("content-type") || "";
@@ -339,34 +344,136 @@ export default function Chatbot({
     }, 0);
   }, [initialQuery, sendMessage]);
 
-  const renderedMessages = useMemo(
+  const lastAssistantMessage = useMemo(
     () =>
-      messages.map((message, idx) => {
-        const isUser = message.role === "user";
-        if (!isUser && message.content.trim() === "") {
-          return null;
-        }
-        return (
-          <div
-            key={idx.toString()}
-            className={`flex ${isUser ? "justify-end" : "justify-start"}`}
-          >
-            <div
-              className={`relative max-w-[85%] rounded-3xl px-4 py-3 text-sm leading-relaxed shadow-lg shadow-black/20 ${
-                isUser
-                  ? "bg-linear-to-br from-cyan-500 to-indigo-500 text-white"
-                  : "bg-white/5 text-slate-100 border border-white/10"
-              }`}
-            >
-              <div className="prose prose-invert prose-sm max-w-none *:my-0 [&>ul]:my-2 [&>p]:my-1">
-                {renderMessageContent(message.content)}
-              </div>
-            </div>
-          </div>
-        );
-      }),
+      [...messages]
+        .reverse()
+        .find(
+          (message) =>
+            message.role === "assistant" && message.content.trim() !== ""
+        ) || null,
     [messages]
   );
+
+  const showYesNoQuickReplies =
+    !!lastAssistantMessage &&
+    /yes\/no/i.test(lastAssistantMessage.content) &&
+    !loading;
+
+  const choiceQuickReplies = useMemo(() => {
+    if (!lastAssistantMessage || loading) return [];
+    const text = lastAssistantMessage.content.toLowerCase();
+    const options: { label: string; value: string }[] = [];
+
+    if (text.includes("1-line summary")) {
+      options.push({
+        label: "Summary",
+        value: "Please give me the 1-line summary of Sandeep's profile.",
+      });
+    }
+    if (text.includes("core skills")) {
+      options.push({
+        label: "Core skills",
+        value: "Show me Sandeep's core skills.",
+      });
+    }
+    if (text.includes("flagship projects")) {
+      options.push({
+        label: "Projects",
+        value: "Show me Sandeep's flagship projects.",
+      });
+    }
+
+    return options;
+  }, [lastAssistantMessage, loading]);
+
+  const renderedMessages = useMemo(() => {
+    const lastIndex = messages.length - 1;
+
+    return messages.map((message, idx) => {
+      const isUser = message.role === "user";
+      const isAssistantPlaceholder =
+        message.role === "assistant" &&
+        message.content.trim() === "" &&
+        loading &&
+        idx === lastIndex;
+
+      if (!isUser && message.content.trim() === "" && !isAssistantPlaceholder) {
+        return null;
+      }
+
+      const isLastAssistant =
+        !isUser &&
+        !isAssistantPlaceholder &&
+        lastAssistantMessage &&
+        message === lastAssistantMessage &&
+        (showYesNoQuickReplies || choiceQuickReplies.length > 0);
+
+      return (
+        <div
+          key={idx.toString()}
+          className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+        >
+          {isAssistantPlaceholder ? (
+            <div className="flex items-center gap-2 px-4 py-3">
+              <span className="inline-block h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(56,189,248,0.9)] animate-ping" />
+            </div>
+          ) : (
+            <div className="flex flex-col items-start gap-2">
+              <div
+                className={`relative max-w-[85%] rounded-3xl px-4 py-3 text-sm leading-relaxed shadow-lg shadow-black/20 ${
+                  isUser
+                    ? "bg-linear-to-br from-cyan-500 to-indigo-500 text-white min-w-[60px]"
+                    : "bg-white/5 text-slate-100 border border-white/10"
+                }`}
+              >
+                <div className="prose prose-invert prose-sm max-w-none *:my-0 [&>ul]:my-2 [&>p]:my-1">
+                  {renderMessageContent(message.content)}
+                </div>
+              </div>
+              {isLastAssistant && showYesNoQuickReplies ? (
+                <div className="flex flex-wrap gap-2">
+                  {["Yes", "No"].map((label) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => sendMessage(undefined, label)}
+                      className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-100 shadow-inner shadow-black/20 transition hover:border-cyan-400/60 hover:bg-cyan-500/20 cursor-pointer"
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              {isLastAssistant &&
+              !showYesNoQuickReplies &&
+              choiceQuickReplies.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {choiceQuickReplies.map((option) => (
+                    <button
+                      key={option.label}
+                      type="button"
+                      onClick={() => sendMessage(undefined, option.value)}
+                      className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-100 shadow-inner shadow-black/20 transition hover:border-cyan-400/60 hover:bg-cyan-500/20 cursor-pointer"
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          )}
+        </div>
+      );
+    });
+  }, [
+    messages,
+    lastAssistantMessage,
+    showYesNoQuickReplies,
+    choiceQuickReplies,
+    sendMessage,
+    loading,
+  ]);
 
   const suggestionPrompts = [
     "Show me Sandeep's top projects.",
@@ -449,15 +556,6 @@ export default function Chatbot({
               </div>
             ) : null}
           </div>
-          {loading ? (
-            <div className="flex justify-start">
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-200 shadow-lg shadow-black/10 backdrop-blur">
-                <span className="h-2 w-2 rounded-full bg-cyan-300 animate-bounce" />
-                <span className="h-2 w-2 rounded-full bg-cyan-300 animate-bounce [animation-delay:0.12s]" />
-                <span className="h-2 w-2 rounded-full bg-cyan-300 animate-bounce [animation-delay:0.24s]" />
-              </div>
-            </div>
-          ) : null}
         </div>
       </div>
 

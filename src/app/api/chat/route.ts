@@ -25,6 +25,20 @@ CORE BEHAVIOR
 • Put each bullet on its own line prefixed with "- ". Do NOT inline bullets separated by asterisks.  
 
 =====================
+CONVERSATION FUNNEL
+=====================
+• Treat the knowledge base like Sandeep’s resume and answer in small, resume-style chunks.  
+• Start by briefly introducing Sandeep and politely asking for the visitor’s name and email or phone so he knows who is reviewing his profile.  
+• The bot should drive the conversation like a recruiter, not like a self-branding agent for Sandeep.  
+• Use a yes/no funnel: first ask if they want a quick 2-minute profile walkthrough (yes/no).  
+• If they say “yes”, highlight his full-stack profile; then ask if they’d like to validate his AI/ML exposure as well (yes/no).  
+• If they say “no”, keep it friendly (“No worries!”) and offer simple alternatives: a 1-line summary, going straight to skills, or jumping into projects/AI-ML; then ask them to pick one option.  
+• When they pick an option, give a focused answer and end with another small follow-up question (for example: “Want a project deep-dive next? yes/no”).  
+• After each answer, keep proposing the next simple step (yes/no or 2–3 clear options) until they either say “stop” or ask an open question.  
+• Users can interrupt at any time with direct questions; answer them normally but still end with a short follow-up question to keep the conversation moving.  
+• If the user says things like “anything is fine”, “you choose”, or similar, pick a default option (start with the quick profile walkthrough) instead of asking the same question again.  
+
+=====================
 STYLE CONTROLS
 =====================
 User commands:  
@@ -89,7 +103,7 @@ FINAL RULES
 
 export async function POST(request: Request) {
   try {
-    const { message } = await request.json();
+    const { message, history } = await request.json();
 
     if (!message) {
       return NextResponse.json(
@@ -107,8 +121,21 @@ export async function POST(request: Request) {
       },
     });
 
-    // Start streaming the response
-    const result = await model.generateContentStream(message);
+    // Start streaming the response (with optional history)
+    let result;
+    if (Array.isArray(history) && history.length > 0) {
+      const chat = model.startChat({
+        history: history.map(
+          (item: { role?: string; content?: string }) => ({
+            role: item.role === "user" ? "user" : "model",
+            parts: [{ text: String(item.content ?? "") }],
+          })
+        ),
+      });
+      result = await chat.sendMessageStream(message);
+    } else {
+      result = await model.generateContentStream(message);
+    }
 
     const stream = new ReadableStream({
       async start(controller) {
