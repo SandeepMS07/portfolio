@@ -365,22 +365,28 @@ export default function Chatbot({
     const text = lastAssistantMessage.content.toLowerCase();
     const options: { label: string; value: string }[] = [];
 
-    if (text.includes("1-line summary")) {
+    if (text.includes("1-line summary") || text.includes("summary")) {
       options.push({
         label: "Summary",
         value: "Please give me the 1-line summary of Sandeep's profile.",
       });
     }
-    if (text.includes("core skills")) {
+    if (text.includes("core skills") || text.includes("skills")) {
       options.push({
         label: "Core skills",
         value: "Show me Sandeep's core skills.",
       });
     }
-    if (text.includes("flagship projects")) {
+    if (text.includes("flagship projects") || text.includes("projects")) {
       options.push({
         label: "Projects",
         value: "Show me Sandeep's flagship projects.",
+      });
+    }
+    if (text.includes("ai/ml exposure") || text.includes("ai/ml")) {
+      options.push({
+        label: "AI/ML exposure",
+        value: "Show me Sandeep's AI/ML exposure and related work.",
       });
     }
 
