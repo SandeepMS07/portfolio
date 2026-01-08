@@ -7,6 +7,8 @@ import { BackgroundFX } from "@/components/background";
 import { ThreeBackground } from "@/components/three-background";
 import { ChatRedirectInput } from "@/components/ChatRedirectInput";
 import { heroProfile } from "@/lib/data";
+import { VisitTracker } from "@/components/visit-tracker";
+import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,6 +55,8 @@ export default function RootLayout({
           </div>
         </div>
         <ChatRedirectInput />
+        <VisitTracker />
+        <Analytics />
       </body>
     </html>
   );
