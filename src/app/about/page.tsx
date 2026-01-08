@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 
 const highlights = [
   {
-    title: "3+ yrs",
+    title: "4+ yrs",
     body: "Product engineering across AI, SaaS, and realtime systems.",
   },
   {

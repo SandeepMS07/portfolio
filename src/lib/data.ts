@@ -381,7 +381,7 @@ export const heroProfile = {
   avatar: "/profile.jpeg",
   stats: [
     { label: "Software Engineer", value: "2022 – 2025" },
-    { label: "Experience", value: "3+ years" },
+    { label: "Experience", value: "4+ years" },
   ],
 };
 
@@ -390,7 +390,7 @@ export const homeSnapshot = {
   title: "Full Stack & AI Platform Engineer",
   description:
     "Building multi-tenant SaaS, AI voice/chat systems, and mobile experiences with a production-first mindset.",
-  tags: ["3+ years", "Turbostart", "Bengaluru"],
+  tags: ["4+ years", "Turbostart", "Bengaluru"],
 };
 
 export const homeFocusAreas = {

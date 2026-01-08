@@ -24,12 +24,10 @@ export const metadata: Metadata = {
     "Portfolio for Sandeep M S showcasing full stack engineering, AI voice/chat bots, multi-tenant SaaS, and mobile builds.",
   icons: {
     icon: [
-      "/profile.jpeg",
-      { url: "/profile.jpeg", type: "image/jpeg" },
-      { url: "/profile.jpeg", sizes: "32x32", type: "image/jpeg" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
     ],
-    shortcut: "/profile.jpeg",
-    apple: "/profile.jpeg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
 };
 

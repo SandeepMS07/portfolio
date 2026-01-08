@@ -1,5 +1,5 @@
 export const sandeepKnowledge = `
-Sandeep M S — Full Stack & AI Platform Engineer (3+ years), Bengaluru, India.
+Sandeep M S — Full Stack & AI Platform Engineer (4+ years), Bengaluru, India.
 Current role: Product Engineer @ Turbostart (2025–Present). Previously Software Engineer @ Turbostart (2023–2025), Software Engineer @ LearnCab (2022–2023), Intern @ LearnCab (2022) & Gofo (2019).
 
 Professional Summary:
