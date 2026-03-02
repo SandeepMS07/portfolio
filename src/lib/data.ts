@@ -52,6 +52,28 @@ export const projects: Project[] = [
     highlight: true,
   },
   {
+    title: "Cloudverse",
+    role: "FinOps Engineer (Chargeback & Unit Economics)",
+    description:
+      "Built FinOps modules for chargeback and unit economics to enable cloud cost attribution, real-time analytics, and profitability insights across teams.",
+    tags: [
+      "FinOps",
+      "Chargeback",
+      "Unit Economics",
+      "NestJS",
+      "GraphQL",
+      "ClickHouse",
+      "PostgreSQL",
+      "Prisma",
+      "Next.js",
+      "Ant Design",
+      "Multi-tenant",
+      "Analytics",
+    ],
+    links: [{ label: "Website", href: "https://cloudverse.ai/" }],
+    highlight: true,
+  },
+  {
     title: "Luna – AI Voice Agent (Inbound & Outbound)",
     role: "Full Stack",
     description:
@@ -358,26 +380,26 @@ export const experiences: ExperienceItem[] = [
 ];
 
 export const heroHighlights = [
-  "Multi-tenant AI chat & voice platforms (KAI)",
-  "Real-time sports tech (T20 Mumbai)",
-  "Enterprise auth, billing & licensing (AuraML)",
+  "Multi-tenant AI chat & voice (KAI)",
+  "DIY white-labeled bot demos (KAI Insights)",
+  "FinOps chargeback & unit economics (Cloudverse)",
 ];
 
 export const heroContent = {
-  badge: "Full Stack · AI Platforms",
-  heading: "Sandeep M S — Full Stack & AI Platform Engineer",
+  badge: "Full Stack · AI & FinOps",
+  heading: "Sandeep M S — Full Stack, AI & FinOps Engineer",
   subheading:
-    "FastAPI • Next.js • Ionic • Multi-Tenant SaaS • AI Voice & Chat Bots • Real-Time Systems",
+    "FastAPI • Next.js • Ionic • Multi-tenant SaaS • AI Voice & Chat Bots • FinOps (Chargeback & Unit Economics)",
   ctaProjects: "/projects",
   ctaResume: "/sandeep-m-s-resume.pdf",
 };
 
 export const heroProfile = {
   name: "Sandeep M S",
-  title: "Full Stack & AI Platform Engineer",
+  title: "Full Stack, AI & FinOps Engineer",
   role: "Product Engineer @ Turbostart",
   period: "2025 – Present",
-  tag: "AI Platforms",
+  tag: "AI + FinOps",
   avatar: "/profile.jpeg",
   stats: [
     { label: "Software Engineer", value: "2022 – 2025" },
@@ -387,9 +409,9 @@ export const heroProfile = {
 
 export const homeSnapshot = {
   label: "Snapshot",
-  title: "Full Stack & AI Platform Engineer",
+  title: "Full Stack, AI & FinOps Engineer",
   description:
-    "Building multi-tenant SaaS, AI voice/chat systems, and mobile experiences with a production-first mindset.",
+    "Building multi-tenant SaaS, AI voice/chat systems, and FinOps analytics with a production-first mindset.",
   tags: ["4+ years", "Turbostart", "Bengaluru"],
 };
 
@@ -398,7 +420,7 @@ export const homeFocusAreas = {
   items: [
     "AI voice/chat agents (Ultravox, Plivo, Gemini)",
     "Multi-tenant SaaS with auth, billing, licensing",
-    "Real-time systems & mobile apps (Ionic)",
+    "FinOps chargeback + unit economics + cloud cost analytics",
   ],
 };
 
