@@ -123,6 +123,10 @@ export default function Chatbot({
   const [canRecognize, setCanRecognize] = useState(false);
   const [listening, setListening] = useState(false);
   const autoQueryRef = useRef<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
+  // Tracks whether the user is near the bottom — only auto-scroll then, so we
+  // never yank the view down while they're reading scrolled-up history.
+  const isAtBottomRef = useRef(true);
 
   // Sync incoming query to input when navigating with ?q=
   useEffect(() => {
@@ -130,10 +134,19 @@ export default function Chatbot({
   }, [initialQuery]);
 
   useEffect(() => {
-    if (listRef.current) {
+    // Only stick to the bottom if the user hasn't scrolled up to read history.
+    if (listRef.current && isAtBottomRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [messages, collapsed]);
+
+  // Track scroll position so streaming updates don't fight a scrolled-up user.
+  const handleListScroll = useCallback(() => {
+    const el = listRef.current;
+    if (!el) return;
+    isAtBottomRef.current =
+      el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+  }, []);
 
   // Clear the typewriter interval if the component unmounts mid-stream,
   // so we never call setState on an unmounted component.
@@ -222,12 +235,17 @@ export default function Chatbot({
       setMessages(nextMessages);
       setInput("");
       setLoading(true);
+      // A fresh send should always scroll to show the new exchange.
+      isAtBottomRef.current = true;
       displayedTextRef.current = "";
       targetTextRef.current = "";
       if (typingIntervalRef.current) {
         clearInterval(typingIntervalRef.current);
         typingIntervalRef.current = null;
       }
+
+      const controller = new AbortController();
+      abortRef.current = controller;
 
       try {
         const historyForApi = nextMessages
@@ -239,6 +257,7 @@ export default function Chatbot({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: trimmed, history: historyForApi }),
+          signal: controller.signal,
         });
 
         const contentType = response.headers.get("content-type") || "";
@@ -317,6 +336,10 @@ export default function Chatbot({
         targetTextRef.current = assistantText || targetTextRef.current;
         startTypingLoop();
       } catch (error) {
+        // User stopped generation — keep whatever is already shown.
+        if ((error as Error)?.name === "AbortError") {
+          return;
+        }
         console.error("Chat send error", error);
         setMessages((prev) => {
           const updated = [...prev];
@@ -339,10 +362,24 @@ export default function Chatbot({
         }
       } finally {
         setLoading(false);
+        abortRef.current = null;
       }
     },
     [input, loading, messages]
   );
+
+  // Stop an in-flight generation: abort the request, halt the typewriter,
+  // and freeze the message at whatever has been revealed so far.
+  const stopGeneration = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
+      typingIntervalRef.current = null;
+    }
+    targetTextRef.current = displayedTextRef.current;
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
     const query = initialQuery.trim();
@@ -544,6 +581,7 @@ export default function Chatbot({
 
       <div
         ref={listRef}
+        onScroll={handleListScroll}
         className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-5"
       >
         <div className="flex flex-1 flex-col gap-3">
@@ -712,14 +750,26 @@ export default function Chatbot({
             <Mic className="h-4 w-4" />
           )}
         </button>
-        <button
-          type="submit"
-          disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet to-cyan px-4 py-2.5 text-sm font-medium text-white shadow-[0_8px_24px_-10px_rgba(255,94,44,0.5)] transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <Send className="h-4 w-4" />
-          <span className="hidden sm:inline">Send</span>
-        </button>
+        {loading ? (
+          <button
+            type="button"
+            onClick={stopGeneration}
+            aria-label="Stop generating"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-white/[0.06] px-4 py-2.5 text-sm font-medium text-fg ring-1 ring-white/15 transition-colors hover:bg-white/10"
+          >
+            <Square className="h-4 w-4 fill-accent text-accent" />
+            <span className="hidden sm:inline">Stop</span>
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={!input.trim()}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet to-cyan px-4 py-2.5 text-sm font-medium text-white shadow-[0_8px_24px_-10px_rgba(255,94,44,0.5)] transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <Send className="h-4 w-4" />
+            <span className="hidden sm:inline">Send</span>
+          </button>
+        )}
         </div>
       </form>
     </div>
