@@ -2,17 +2,53 @@ import { sandeepKnowledge } from "@/lib/sandeep-knowledge";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
-export const env = {
-  GOOGLE_API_KEY: process.env.GOOGLE_API_KEY!,
-};
+const FALLBACK_REPLY =
+  "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?";
 
-const genAI = new GoogleGenerativeAI(env.GOOGLE_API_KEY);
+// Lazily construct the client; if the key is missing we fail loudly with a
+// clear signal instead of constructing a client with `undefined`.
+const apiKey = process.env.GOOGLE_API_KEY;
+const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
+
+// ── Lightweight in-memory rate limit (per IP, sliding window) ────────────
+// Mitigates abuse of the paid Gemini endpoint. Per-instance only — for
+// multi-instance deployments swap for a shared store (Redis/Upstash).
+const RATE_LIMIT_MAX = 20; // requests
+const RATE_LIMIT_WINDOW_MS = 60_000; // per minute
+const ipHits = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (ipHits.get(ip) ?? []).filter(
+    (t) => now - t < RATE_LIMIT_WINDOW_MS,
+  );
+  recent.push(now);
+  ipHits.set(ip, recent);
+  // Opportunistic cleanup so the map can't grow unbounded.
+  if (ipHits.size > 5000) {
+    for (const [key, times] of ipHits) {
+      if (times.every((t) => now - t >= RATE_LIMIT_WINDOW_MS)) {
+        ipHits.delete(key);
+      }
+    }
+  }
+  return recent.length > RATE_LIMIT_MAX;
+}
 
 // SYSTEM PROMPT
 const SYSTEM_PROMPT = `
- You are “Sandeep’s Portfolio Assistant,” a multilingual, friendly digital twin of Sandeep M S.  
-Answer only about Sandeep’s work, skills, projects, experience, and tech (using the knowledge base).  
+ You are “Sandeep’s Portfolio Assistant,” a multilingual, friendly digital twin of Sandeep M S.
+Answer only about Sandeep’s work, skills, projects, experience, and tech (using the knowledge base).
 Speak naturally, like a helpful engineer.
+
+=====================
+POSITIONING (HOW TO FRAME SANDEEP)
+=====================
+• Sandeep is a strong, production-focused FULL-STACK AI ENGINEER — present him with confidence, never undersell.
+• Lead with proof, not adjectives: cite real impact (e.g. MCA Fantasy League serving 540K+ users, real LLM/voice agents like KAI & Luna, multi-tenant SaaS with SSO/billing/licensing).
+• Emphasize end-to-end ownership: he designs architecture and ships backend + frontend + mobile + infra to production (Play/App Store).
+• Highlight AI depth: real streaming voice + LLM agents (Ultravox, Plivo, Gemini, OpenAI), not just API wrappers.
+• Be honest and accurate — only use facts from the knowledge base; never exaggerate beyond it or invent numbers.
 
 =====================
 CORE BEHAVIOR
@@ -103,9 +139,27 @@ FINAL RULES
 
 export async function POST(request: Request) {
   try {
+    // Fail clearly if the API key isn't configured.
+    if (!genAI) {
+      console.error("GOOGLE_API_KEY is not set");
+      return NextResponse.json({ reply: FALLBACK_REPLY }, { status: 500 });
+    }
+
+    // Rate limit by client IP.
+    const ip =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown";
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { reply: "One sec — let me answer that properly 🙂" },
+        { status: 429 }
+      );
+    }
+
     const { message, history } = await request.json();
 
-    if (!message) {
+    if (!message || typeof message !== "string") {
       return NextResponse.json(
         { reply: "Please ask a question about Sandeep." },
         { status: 400 }
@@ -146,11 +200,7 @@ export async function POST(request: Request) {
           }
         } catch (err) {
           console.error("Streaming error:", err);
-          controller.enqueue(
-            new TextEncoder().encode(
-              "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?"
-            )
-          );
+          controller.enqueue(new TextEncoder().encode(FALLBACK_REPLY));
         } finally {
           controller.close();
         }
@@ -165,12 +215,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Gemini API error:", error);
-    return NextResponse.json(
-      {
-        reply:
-          "Hey! I’m Sandeep’s assistant. I can share his skills, projects, and experience—what would you like to know?",
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ reply: FALLBACK_REPLY }, { status: 500 });
   }
 }

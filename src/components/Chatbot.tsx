@@ -135,6 +135,17 @@ export default function Chatbot({
     }
   }, [messages, collapsed]);
 
+  // Clear the typewriter interval if the component unmounts mid-stream,
+  // so we never call setState on an unmounted component.
+  useEffect(() => {
+    return () => {
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);
+        typingIntervalRef.current = null;
+      }
+    };
+  }, []);
+
   useEffect(() => {
     if (isPage) return;
     const handleClick = (event: MouseEvent) => {
