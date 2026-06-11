@@ -1,59 +1,80 @@
+"use client";
+
+import { motion, type Variants } from "framer-motion";
 import { PageHeader } from "@/components/page-header";
-import { SkillGrid } from "@/components/skill-card";
-import { Cpu, Workflow, Sparkles } from "lucide-react";
+import { SectionLabel } from "@/components/section-label";
+import { SkillProficiency } from "@/components/skill-proficiency";
+
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+
+const reveal: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease } },
+};
+
+const spotlights = [
+  {
+    title: "Systems built for scale",
+    copy: "Multi-tenant backends with crisp observability, queues, and real-time pipes.",
+  },
+  {
+    title: "AI-first experiences",
+    copy: "Voice/chat agents with guardrails, tool-use, and latency-aware UX.",
+  },
+  {
+    title: "Delivery & flow",
+    copy: "Developer ergonomics, reusable UI primitives, and production-readiness.",
+  },
+];
 
 export default function SkillsPage() {
-  const cardBackground = "linear-gradient(145deg, #0a1a2c 0%, #0c2038 50%, #0f2a46 100%)";
-
-  const spotlights = [
-    {
-      title: "Systems built for scale",
-      copy: "Multi-tenant backends with crisp observability, queues, and real-time pipes.",
-      icon: Cpu,
-      background: cardBackground,
-    },
-    {
-      title: "AI-first experiences",
-      copy: "Voice/chat agents with guardrails, tool-use, and latency-aware UX.",
-      icon: Sparkles,
-      background: cardBackground,
-    },
-    {
-      title: "Delivery & flow",
-      copy: "Developer ergonomics, reusable UI primitives, and production-readiness.",
-      icon: Workflow,
-      background: cardBackground,
-    },
-  ];
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-20 sm:space-y-28">
       <PageHeader
+        index="00"
         title="Skills"
-        subtitle="Backend to frontend to AI/voice systems—tools I use to ship reliable products."
+        subtitle="Backend to frontend to AI/voice systems — the tools I reach for to ship reliable products."
       />
-      <div className="grid gap-4 md:grid-cols-3">
-        {spotlights.map((item) => (
-          <div
-            key={item.title}
-            className="relative overflow-hidden rounded-2xl border border-white/10 p-4 shadow-lg shadow-cyan-500/10"
-            style={{
-              background: item.background,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          >
-            <div className="relative space-y-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-cyan-100 shadow-inner shadow-cyan-500/20 backdrop-blur">
-                <item.icon className="h-5 w-5" />
-              </div>
-              <h3 className="text-base font-semibold text-white">{item.title}</h3>
-              <p className="text-sm text-slate-200">{item.copy}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <SkillGrid />
+
+      {/* ---- 01 · what I optimize for ---- */}
+      <section>
+        <SectionLabel index="01">What I optimize for</SectionLabel>
+        <motion.div
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: "-80px" }}
+          className="mt-8 grid gap-10 sm:grid-cols-3 sm:gap-12"
+        >
+          {spotlights.map((item, i) => (
+            <motion.div key={item.title} variants={reveal}>
+              <span className="font-poster text-3xl leading-none text-accent/70">
+                0{i + 1}
+              </span>
+              <span className="mt-4 block h-px w-10 bg-line-strong" />
+              <h3 className="mt-4 text-lg font-semibold tracking-tight text-fg">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-fg-dim">
+                {item.copy}
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
+      </section>
+
+      {/* ---- 02 · proficiency ---- */}
+      <section>
+        <SectionLabel index="02">Depth by domain</SectionLabel>
+        <div className="mt-8">
+          <SkillProficiency />
+        </div>
+      </section>
     </div>
   );
 }

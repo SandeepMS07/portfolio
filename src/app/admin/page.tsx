@@ -69,46 +69,45 @@ export default function AdminPage() {
   };
 
   if (loading) {
-    return (
-      <div className="mx-auto max-w-4xl px-4 py-16 text-slate-100">
-        Loading analytics…
-      </div>
-    );
+    return <div className="py-16 text-sm text-fg-dim">Loading analytics…</div>;
   }
 
   if (!stats) {
     return (
-      <div className="mx-auto max-w-md px-4 py-16 text-slate-100">
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 shadow-2xl">
-          <h1 className="text-2xl font-semibold">Admin Login</h1>
-          <p className="mt-2 text-sm text-slate-400">
+      <div className="mx-auto max-w-md py-16">
+        <div className="glass rounded-2xl p-6">
+          <span className="eyebrow">// Restricted</span>
+          <h1 className="mt-2 text-2xl font-semibold text-aurora">
+            Admin Login
+          </h1>
+          <p className="mt-1 text-sm text-fg-dim">
             Enter your admin credentials to view analytics.
           </p>
           <form className="mt-6 space-y-4" onSubmit={handleLogin}>
             <div>
-              <label className="text-xs uppercase tracking-wide text-slate-400">
+              <label className="text-xs font-medium uppercase tracking-[0.12em] text-fg-faint">
                 Username
               </label>
               <input
-                className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-slate-100 focus:border-sky-500 focus:outline-none"
+                className="mt-2 w-full rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-fg outline-none transition-colors focus:border-violet/60"
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
               />
             </div>
             <div>
-              <label className="text-xs uppercase tracking-wide text-slate-400">
+              <label className="text-xs font-medium uppercase tracking-[0.12em] text-fg-faint">
                 Password
               </label>
-              <div className="mt-2 flex items-center gap-2 rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 focus-within:border-sky-500">
+              <div className="mt-2 flex items-center gap-2 rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 focus-within:border-violet/60">
                 <input
                   type={showPassword ? "text" : "password"}
-                  className="w-full bg-transparent text-slate-100 focus:outline-none"
+                  className="w-full bg-transparent text-sm text-fg outline-none"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                 />
                 <button
                   type="button"
-                  className="text-slate-400 hover:text-slate-200"
+                  className="text-fg-faint transition-colors hover:text-fg"
                   onClick={() => setShowPassword((prev) => !prev)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
@@ -116,8 +115,8 @@ export default function AdminPage() {
                 </button>
               </div>
             </div>
-            {error ? <p className="text-sm text-rose-400">{error}</p> : null}
-            <button className="w-full rounded-lg bg-sky-500 py-2 font-medium text-slate-950 hover:bg-sky-400">
+            {error ? <p className="text-sm text-rose-300">{error}</p> : null}
+            <button className="w-full rounded-full bg-gradient-to-r from-violet to-cyan py-2.5 text-sm font-medium text-white shadow-[0_8px_24px_-10px_rgba(255,94,44,0.5)] transition-transform hover:-translate-y-0.5">
               Sign in
             </button>
           </form>
@@ -127,65 +126,46 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 text-slate-100">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-10 py-2">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold">Portfolio Analytics</h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <span className="eyebrow">// Internal</span>
+          <h1 className="mt-2 text-3xl font-semibold text-aurora">
+            Portfolio Analytics
+          </h1>
+          <p className="mt-1 text-sm text-fg-dim">
             File-based analytics from visitor tracking.
           </p>
         </div>
         <button
           onClick={handleLogout}
-          className="rounded-lg border border-slate-700 px-4 py-2 text-sm text-slate-200 hover:border-slate-500"
+          className="rounded-full border border-line px-4 py-2 text-xs font-medium uppercase tracking-[0.08em] text-fg-dim transition-colors hover:border-violet/60 hover:text-fg"
         >
           Log out
         </button>
       </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
-          <div className="text-xs uppercase tracking-wide text-slate-500">
-            Total visits
-          </div>
-          <div className="mt-2 text-3xl font-semibold">{stats.total}</div>
-        </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
-          <div className="text-xs uppercase tracking-wide text-slate-500">
-            Last visit
-          </div>
-          <div className="mt-2 text-sm text-slate-200">
-            {stats.lastVisit?.createdAt ?? "No data yet"}
-          </div>
-          <div className="mt-1 text-xs text-slate-500">
-            {stats.lastVisit?.path ?? "Unknown path"}
-          </div>
-        </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
-          <div className="text-xs uppercase tracking-wide text-slate-500">
-            Top device
-          </div>
-          <div className="mt-2 text-lg font-semibold">
-            {stats.devices[0]?.label ?? "Unknown"}
-          </div>
-          <div className="text-xs text-slate-500">
-            {stats.devices[0]?.count ?? 0} visits
-          </div>
-        </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
-          <div className="text-xs uppercase tracking-wide text-slate-500">
-            Top country
-          </div>
-          <div className="mt-2 text-lg font-semibold">
-            {stats.countries[0]?.label ?? "Unknown"}
-          </div>
-          <div className="text-xs text-slate-500">
-            {stats.countries[0]?.count ?? 0} visits
-          </div>
-        </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatTile label="Total visits" value={stats.total} />
+        <StatTile
+          label="Last visit"
+          value={stats.lastVisit?.createdAt ?? "No data yet"}
+          sub={stats.lastVisit?.path ?? "Unknown path"}
+          small
+        />
+        <StatTile
+          label="Top device"
+          value={stats.devices[0]?.label ?? "Unknown"}
+          sub={`${stats.devices[0]?.count ?? 0} visits`}
+        />
+        <StatTile
+          label="Top country"
+          value={stats.countries[0]?.label ?? "Unknown"}
+          sub={`${stats.countries[0]?.count ?? 0} visits`}
+        />
       </div>
 
-      <div className="mt-10 grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         <AnalyticsTable title="Visits per day" rows={stats.visitsPerDay} />
         <AnalyticsTable title="Top pages" rows={stats.topPages} />
         <AnalyticsTable title="Top referrers" rows={stats.topReferrers} />
@@ -196,29 +176,49 @@ export default function AdminPage() {
   );
 }
 
-function AnalyticsTable({
-  title,
-  rows,
+function StatTile({
+  label,
+  value,
+  sub,
+  small,
 }: {
-  title: string;
-  rows: StatItem[];
+  label: string;
+  value: string | number;
+  sub?: string;
+  small?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-4">
-      <div className="text-sm font-semibold">{title}</div>
-      <div className="mt-3 space-y-2 text-sm text-slate-200">
+    <div className="glass rounded-2xl p-4">
+      <div className="eyebrow">{label}</div>
+      <div
+        className={`mt-2 font-semibold text-fg ${small ? "text-sm" : "text-2xl"}`}
+      >
+        {value}
+      </div>
+      {sub ? <div className="mt-1 text-xs text-fg-faint">{sub}</div> : null}
+    </div>
+  );
+}
+
+function AnalyticsTable({ title, rows }: { title: string; rows: StatItem[] }) {
+  return (
+    <div className="glass overflow-hidden rounded-2xl">
+      <div className="border-b border-line px-4 py-3 text-sm font-semibold text-fg">
+        {title}
+      </div>
+      <div className="divide-y divide-line">
         {rows.length ? (
           rows.slice(0, 8).map((row) => (
             <div
               key={`${title}-${row.label}`}
-              className="flex items-center justify-between gap-4 rounded-lg bg-slate-900/60 px-3 py-2"
+              className="flex items-center justify-between gap-4 px-4 py-2.5 text-sm"
             >
-              <span className="truncate">{row.label}</span>
-              <span className="text-slate-400">{row.count}</span>
+              <span className="truncate text-fg-dim">{row.label}</span>
+              <span className="font-mono text-cyan">{row.count}</span>
             </div>
           ))
         ) : (
-          <div className="text-sm text-slate-500">No data yet.</div>
+          <div className="px-4 py-3 text-xs text-fg-faint">No data yet.</div>
         )}
       </div>
     </div>

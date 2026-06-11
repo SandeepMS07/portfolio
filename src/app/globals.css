@@ -1,17 +1,229 @@
 @import "tailwindcss";
 
+@theme {
+  /* Liquid Glass — dark, vibrant, translucent */
+  --color-night: #0a0b0f;       /* page base (named night for back-compat) */
+  --color-night-2: #121319;
+  --color-surface: #16171e;
+  --color-fg: #f4f5f7;          /* near-white ink */
+  --color-fg-dim: #bcbcc6;      /* secondary — readable on dark */
+  --color-fg-faint: #8c8c97;    /* tertiary — labels/eyebrows */
+  --color-line: #ffffff14;      /* hairline on dark */
+  --color-line-strong: #ffffff2b;
+  --color-accent: #ff5e2c;      /* cosmic orange */
+  --color-violet: #ff7a45;      /* light orange */
+  --color-cyan: #ff9347;        /* amber-orange */
+  --color-magenta: #ff4733;     /* red-orange */
+
+  --font-display: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
+  --font-poster: var(--font-anton), ui-sans-serif, system-ui, sans-serif;
+}
+
 :root {
   color-scheme: dark;
 }
 
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
 body {
-  background: #0b1220;
-  color: #e2e8f0;
-  font-family: var(--font-geist-sans, "Inter"), system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-color: var(--color-night);
+  color: var(--color-fg);
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.022em;
 }
 
 ::selection {
-  background: rgba(45, 212, 191, 0.35);
-  color: #0b1220;
+  background: var(--color-accent);
+  color: #1a0a04;
 }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.text-aurora {
+  background: linear-gradient(104deg, #ff9347 0%, #ff5e2c 50%, #e63d12 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- Liquid Glass material (dark) ---- */
+.glass {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0.025)
+  );
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+  border: none;
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.12),
+    inset 0 -16px 32px -20px rgba(0, 0, 0, 0.5),
+    0 22px 50px -18px rgba(0, 0, 0, 0.65);
+}
+/* faint refractive lens rim */
+.glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.04) 38%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0.1)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.glass-strong {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.05)
+  );
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border: none;
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.16),
+    0 26px 60px -20px rgba(0, 0, 0, 0.7);
+}
+
+/* top specular sheen for hero/feature glass */
+.glass-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.glass-sheen::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 45%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.card-glow {
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease, background-color 0.4s ease;
+}
+.card-glow:hover {
+  transform: translateY(-3px);
+  background-color: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 28px 60px -18px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.18);
+}
+
+@keyframes blob-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(6%, -5%) scale(1.12); }
+  66%  { transform: translate(-5%, 6%) scale(0.94); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+/* gentle vertical float */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+.animate-float {
+  animation: float-y 6s ease-in-out infinite;
+}
+
+/* voice waveform equalizer */
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.35); }
+  50%      { transform: scaleY(1); }
+}
+.animate-eq {
+  transform-origin: center;
+  animation: eq 0.9s ease-in-out infinite;
+}
+
+/* moving gradient sheen for accent text */
+@keyframes aurora-shimmer {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.text-aurora-shimmer {
+  background: linear-gradient(
+    104deg,
+    #ff9347,
+    #ff5e2c,
+    #e63d12,
+    #ff5e2c,
+    #ff9347
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: aurora-shimmer 6s linear infinite;
+}
+
+/* hover shine sweep for pill buttons */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-130%) skewX(-18deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.28),
+    transparent
+  );
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.btn-shine:hover::after {
+  transform: translateX(130%) skewX(-18deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-eq,
+  .text-aurora-shimmer { animation: none; }
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.16); border-radius: 99px; }

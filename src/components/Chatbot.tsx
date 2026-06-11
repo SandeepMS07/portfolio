@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { MessageCircle, Send, X, Mic, Square } from "lucide-react";
+import { MessageCircle, Send, X, Mic, Square, Sparkles, ArrowUpRight } from "lucide-react";
 
 type ChatbotProps = {
   mode?: "floating" | "page";
@@ -421,19 +421,21 @@ export default function Chatbot({
           className={`flex ${isUser ? "justify-end" : "justify-start"}`}
         >
           {isAssistantPlaceholder ? (
-            <div className="flex items-center gap-2 px-4 py-3">
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(56,189,248,0.9)] animate-ping" />
+            <div className="flex items-center gap-1.5 px-3 py-3">
+              <span className="h-2 w-2 animate-bounce rounded-full bg-cyan [animation-delay:-0.2s]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-violet [animation-delay:-0.1s]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-magenta" />
             </div>
           ) : (
-            <div className="flex flex-col items-start gap-2">
+            <div className="flex max-w-[88%] flex-col items-start gap-2">
               <div
-                className={`relative max-w-[85%] rounded-3xl px-4 py-3 text-sm leading-relaxed shadow-lg shadow-black/20 ${
+                className={`relative rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                   isUser
-                    ? "bg-linear-to-br from-cyan-500 to-indigo-500 text-white min-w-[60px]"
-                    : "bg-white/5 text-slate-100 border border-white/10"
+                    ? "bg-gradient-to-br from-violet to-cyan text-night shadow-[0_8px_30px_-10px_rgba(255,94,44,0.5)]"
+                    : "glass text-fg"
                 }`}
               >
-                <div className="prose prose-invert prose-sm max-w-none *:my-0 [&>ul]:my-2 [&>p]:my-1">
+                <div className="prose prose-sm max-w-none *:my-0 [&>ul]:my-2 [&>p]:my-1">
                   {renderMessageContent(message.content)}
                 </div>
               </div>
@@ -444,7 +446,7 @@ export default function Chatbot({
                       key={label}
                       type="button"
                       onClick={() => sendMessage(undefined, label)}
-                      className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-100 shadow-inner shadow-black/20 transition hover:border-cyan-400/60 hover:bg-cyan-500/20 cursor-pointer"
+                      className="cursor-pointer rounded-full border border-line bg-white/[0.04] px-3.5 py-1.5 text-xs font-medium text-fg-dim transition-colors hover:border-violet/60 hover:text-fg"
                     >
                       {label}
                     </button>
@@ -460,7 +462,7 @@ export default function Chatbot({
                       key={option.label}
                       type="button"
                       onClick={() => sendMessage(undefined, option.value)}
-                      className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-100 shadow-inner shadow-black/20 transition hover:border-cyan-400/60 hover:bg-cyan-500/20 cursor-pointer"
+                      className="cursor-pointer rounded-full border border-line bg-white/[0.04] px-3.5 py-1.5 text-xs font-medium text-fg-dim transition-colors hover:border-violet/60 hover:text-fg"
                     >
                       {option.label}
                     </button>
@@ -487,30 +489,33 @@ export default function Chatbot({
     "Summarize Sandeep's experience in 30 seconds.",
     "Does he have AI/ML or backend strengths?",
   ];
+  const promptChips = [
+    { label: "Top projects", value: "Show me Sandeep's top projects." },
+    { label: "Core skills", value: "What are his core skills and tech stack?" },
+    { label: "Experience", value: "Summarize Sandeep's experience in 30 seconds." },
+    { label: "AI / ML strengths", value: "Does he have AI/ML or backend strengths?" },
+  ];
   const showSuggestions = messages.length <= 1 && !loading;
 
   const panel = (
     <div
       ref={panelRef}
-      className={`pointer-events-auto relative flex flex-col overflow-hidden rounded-3xl border border-cyan-500/15 bg-slate-950/80 backdrop-blur-2xl shadow-[0_15px_60px_rgba(0,0,0,0.55)] ring-1 ring-white/5 ${
+      className={`glass pointer-events-auto relative flex flex-col overflow-hidden rounded-3xl shadow-[0_30px_90px_-25px_rgba(0,0,0,0.85)] ${
         isPage
-          ? "w-full h-[70vh] min-h-[420px] max-h-[calc(100vh-220px)]"
-          : "w-[calc(100vw-2rem)] max-w-[440px] h-[60vh]"
+          ? "h-[82vh] min-h-[540px] w-full max-h-[calc(100vh-150px)]"
+          : "h-[60vh] w-[calc(100vw-2rem)] max-w-[440px]"
       }`}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(6,182,212,0.12),transparent_32%),radial-gradient(circle_at_80%_0%,rgba(129,140,248,0.14),transparent_35%),radial-gradient(circle_at_30%_80%,rgba(16,185,129,0.12),transparent_40%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0)_18%,rgba(255,255,255,0.04)_36%,rgba(255,255,255,0)_54%,rgba(255,255,255,0.04)_72%,rgba(255,255,255,0)_90%)] opacity-30" />
-      <div className="relative flex items-center justify-between gap-3 border-b border-white/10 bg-linear-to-r from-slate-900/70 via-slate-900/60 to-slate-900/50 px-5 py-4">
+      <div className="flex items-center justify-between gap-3 border-b border-line bg-white/[0.02] px-5 py-3.5">
         <div className="flex items-center gap-3">
-          <span
-            className="flex h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.75)] ring-2 ring-emerald-400/20"
-            aria-hidden
-          />
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/70" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-accent shadow-[0_0_10px_2px_rgba(255,94,44,0.7)]" />
+          </span>
           <div>
-            <p className="text-sm font-semibold text-white">Chat with me</p>
-            <p className="text-xs text-slate-300/80">
-              Hey! I’m Sandeep’s assistant. Ask me about his skills, projects,
-              or experience.
+            <p className="text-sm font-semibold text-fg">Portfolio Assistant</p>
+            <p className="text-xs text-fg-faint">
+              Ask about skills, projects, or experience.
             </p>
           </div>
         </div>
@@ -518,7 +523,7 @@ export default function Chatbot({
           <button
             type="button"
             onClick={() => setCollapsed(true)}
-            className="rounded-full p-1.5 text-slate-300 transition hover:bg-white/10"
+            className="rounded-lg border border-line p-1.5 text-fg-dim transition-colors hover:border-violet/60 hover:text-fg"
             aria-label="Close chat"
           >
             <X className="h-4 w-4" />
@@ -528,98 +533,147 @@ export default function Chatbot({
 
       <div
         ref={listRef}
-        className="relative flex flex-1 min-h-0 flex-col gap-3 overflow-y-auto bg-linear-to-b from-slate-950/65 via-slate-900/55 to-slate-900/70 px-5 py-5"
+        className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-5"
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.05),transparent_30%),radial-gradient(circle_at_80%_0%,rgba(99,102,241,0.06),transparent_35%)]" />
-        <div className="relative flex flex-1 flex-col gap-3">
-          {renderedMessages}
-          <div className="mt-auto">
-            {showSuggestions ? (
-              <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r from-slate-900/70 via-slate-900/60 to-emerald-900/70 px-5 py-5 shadow-xl shadow-black/35 backdrop-blur">
-                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(14,165,233,0.16),transparent_42%),radial-gradient(circle_at_82%_18%,rgba(16,185,129,0.16),transparent_42%)] opacity-80" />
-                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0)_18%,rgba(255,255,255,0.08)_36%,rgba(255,255,255,0)_54%,rgba(255,255,255,0.08)_72%,rgba(255,255,255,0)_90%)] opacity-25" />
-
-                <div className="relative space-y-4">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
-                    Quick prompts
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {suggestionPrompts.map((prompt) => (
-                      <button
-                        key={prompt}
-                        type="button"
-                        onClick={() => sendMessage(undefined, prompt)}
-                        className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm text-slate-200 transition hover:border-cyan-400/50 hover:bg-white/10 hover:text-white shadow-inner shadow-black/20 cursor-pointer"
-                      >
-                        <div className="pointer-events-none absolute inset-0 translate-y-full bg-gradient-to-r from-cyan-400/20 via-emerald-400/20 to-indigo-400/20 transition duration-500 group-hover:translate-y-0" />
-                        <span className="relative block">{prompt}</span>
-                      </button>
-                    ))}
+        <div className="flex flex-1 flex-col gap-3">
+          {showSuggestions ? (
+            isPage ? (
+              /* immersive centered welcome */
+              <div className="flex flex-1 flex-col items-center justify-center gap-7 py-8 text-center">
+                <div className="relative">
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,94,44,0.5),transparent_70%)] blur-2xl"
+                  />
+                  <div className="animate-float relative flex h-16 w-16 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(255,94,44,0.28),rgba(255,71,51,0.08))] text-accent ring-1 ring-accent/30">
+                    <Sparkles className="h-7 w-7" />
                   </div>
                 </div>
+
+                <div className="space-y-3">
+                  <span className="eyebrow">Portfolio Assistant</span>
+                  <h2 className="font-poster text-4xl leading-[0.95] tracking-tight text-fg sm:text-5xl">
+                    How can I <span className="text-aurora">help?</span>
+                  </h2>
+                  <p className="mx-auto max-w-md text-sm leading-relaxed text-fg-dim">
+                    Ask about Sandeep&apos;s skills, projects, and experience —
+                    in plain English. Tap a topic or type your own question.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-2.5">
+                  {promptChips.map((chip) => (
+                    <button
+                      key={chip.label}
+                      type="button"
+                      onClick={() => sendMessage(undefined, chip.value)}
+                      className="btn-shine glass card-glow inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-fg-dim transition-colors hover:text-fg"
+                    >
+                      <Sparkles className="h-3.5 w-3.5 text-accent" />
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
               </div>
-            ) : null}
-          </div>
+            ) : (
+              /* floating widget welcome */
+              <div className="flex flex-col gap-4">
+                <div className="flex items-end gap-2.5">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,rgba(255,94,44,0.3),rgba(255,71,51,0.1))] text-accent ring-1 ring-accent/30">
+                    <Sparkles className="h-4 w-4" />
+                  </span>
+                  <div className="glass max-w-[88%] rounded-2xl rounded-bl-md px-4 py-3 text-sm leading-relaxed text-fg">
+                    Hey! I&apos;m Sandeep&apos;s portfolio assistant. Ask me
+                    about his skills, projects, or experience — or tap a prompt
+                    to begin.
+                  </div>
+                </div>
+                <div className="mt-1 grid gap-2.5 pl-10 sm:grid-cols-2">
+                  {suggestionPrompts.map((prompt) => (
+                    <button
+                      key={prompt}
+                      type="button"
+                      onClick={() => sendMessage(undefined, prompt)}
+                      className="group glass card-glow flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-left text-sm text-fg-dim transition-colors hover:text-fg"
+                    >
+                      <span>{prompt}</span>
+                      <ArrowUpRight className="h-4 w-4 shrink-0 text-fg-faint transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )
+          ) : (
+            renderedMessages
+          )}
         </div>
       </div>
 
       {listening ? (
-        <div className="px-5 pb-3">
-          <div className="relative overflow-hidden rounded-3xl border border-emerald-400/25 bg-gradient-to-b from-slate-950/90 via-slate-950/85 to-emerald-950/70 px-5 py-6 shadow-[0_20px_60px_rgba(16,185,129,0.25)] backdrop-blur">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(52,211,153,0.25),transparent_50%),radial-gradient(circle_at_80%_10%,rgba(16,185,129,0.24),transparent_45%)] opacity-75" />
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0)_18%,rgba(255,255,255,0.1)_36%,rgba(255,255,255,0)_54%,rgba(255,255,255,0.1)_72%,rgba(255,255,255,0)_90%)] opacity-20" />
+        <div className="border-t border-line bg-white/[0.02] px-5 py-9">
+          <div className="flex flex-col items-center gap-6 text-center">
+            {/* pulsing mic orb */}
+            <div className="relative flex h-24 w-24 items-center justify-center">
+              <span className="absolute inset-0 animate-ping rounded-full bg-accent/15" />
+              <span className="absolute inset-2 animate-ping rounded-full bg-accent/10 [animation-delay:0.4s]" />
+              <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-[linear-gradient(135deg,#ff7a45,#ff4733)] text-white shadow-[0_0_44px_-6px_rgba(255,94,44,0.85)]">
+                <Mic className="h-6 w-6" />
+              </span>
+            </div>
 
-            <div className="relative flex flex-col items-center gap-6 text-center">
-              <p className="text-sm font-semibold text-emerald-100">
-                Listening…
-              </p>
+            {/* live waveform */}
+            <div className="flex h-7 items-center gap-1">
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <span
+                  key={i}
+                  className="animate-eq w-1 rounded-full bg-accent"
+                  style={{
+                    height: "100%",
+                    animationDelay: `${(i % 5) * 0.13}s`,
+                    opacity: 0.5 + ((i + 1) % 3) * 0.2,
+                  }}
+                />
+              ))}
+            </div>
 
-              <div className="relative h-32 w-32 perspective-[900px] sm:h-36 sm:w-36">
-                <div className="absolute inset-0 animate-[spin_18s_linear_infinite] rounded-full bg-[conic-gradient(from_140deg,#0ea5e9_0%,#22c55e_20%,#0ea5e9_45%,#16a34a_70%,#0ea5e9_100%)] blur-[3px] opacity-70" />
-                <div className="absolute inset-[6%] rounded-full bg-[radial-gradient(circle_at_40%_40%,rgba(255,255,255,0.32),rgba(16,185,129,0.25),rgba(0,0,0,0.55))]" />
-                <div className="absolute inset-[14%] rounded-full bg-[radial-gradient(circle_at_70%_25%,rgba(255,255,255,0.4),transparent_55%)] opacity-90" />
-                <div className="absolute inset-[4%] rounded-full bg-[radial-gradient(circle_at_25%_25%,rgba(255,255,255,0.25),transparent_45%),radial-gradient(circle_at_70%_70%,rgba(14,165,233,0.25),transparent_55%)] mix-blend-screen opacity-80" />
-                <div className="absolute inset-[10%] rounded-full bg-gradient-to-br from-white/15 via-emerald-400/10 to-transparent opacity-70 [transform:rotateX(16deg)_rotateY(-12deg)]" />
-                <div className="absolute inset-0 rounded-full shadow-[0_0_36px_rgba(16,185,129,0.6)]" />
-                <div className="absolute inset-0 animate-[orbPulse_3s_ease-in-out_infinite] rounded-full bg-emerald-400/10 blur-xl" />
-              </div>
-
-              <p className="text-sm leading-relaxed text-slate-200/90">
+            <div className="space-y-1.5">
+              <p className="eyebrow">Listening…</p>
+              <p className="max-w-sm text-sm text-fg-dim">
                 {input.trim()
                   ? `“${input}”`
                   : "Tell me your question and I’ll send it."}
               </p>
-
-              <button
-                type="button"
-                onClick={toggleListening}
-                className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 shadow-lg shadow-emerald-500/40 transition hover:scale-[1.02] hover:shadow-emerald-400/45 cursor-pointer"
-              >
-                Stop listening
-              </button>
             </div>
+
+            <button
+              type="button"
+              onClick={toggleListening}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-white/[0.05] px-5 py-2.5 text-sm font-medium text-fg ring-1 ring-white/12 transition-colors hover:bg-white/10"
+            >
+              <Square className="h-3.5 w-3.5 text-accent" />
+              Stop listening
+            </button>
           </div>
         </div>
       ) : null}
 
       <form
         onSubmit={sendMessage}
-        className="relative flex items-center gap-2 border-t border-white/10 bg-slate-950/85 px-4 py-3"
+        className="border-t border-line bg-white/[0.02] px-4 py-3"
       >
-        <div className="pointer-events-none absolute -top-6 left-8 h-12 w-12 rounded-full bg-cyan-500/20 blur-3xl" />
+        <div className="flex items-center gap-2">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-1 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 transition focus:border-cyan-400 focus:outline-none focus:shadow-[0_10px_40px_rgba(6,182,212,0.25)] backdrop-blur"
-          placeholder="Ask about Sandeep’s experience..."
+          className="flex-1 rounded-xl border border-line bg-white/[0.03] px-3.5 py-2.5 text-sm text-fg outline-none transition-colors placeholder:text-fg-faint focus:border-violet/60"
+          placeholder="Ask about Sandeep’s experience…"
         />
         <button
           type="button"
           onClick={toggleListening}
           disabled={!canRecognize || loading}
-          className="inline-flex items-center justify-center gap-1 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-100 shadow-inner shadow-black/10 transition hover:border-cyan-300/60 hover:text-white disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
+          className="inline-flex items-center justify-center rounded-xl border border-line bg-white/[0.03] px-3 py-2.5 text-fg-dim transition-colors hover:border-violet/60 hover:text-fg disabled:cursor-not-allowed disabled:opacity-50"
+          aria-label={listening ? "Stop listening" : "Start voice input"}
         >
           {listening ? (
             <Square className="h-4 w-4" />
@@ -630,11 +684,12 @@ export default function Chatbot({
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-cyan-500 via-sky-500 to-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-cyan-500/30 transition hover:-translate-y-0.5 hover:shadow-blue-500/35 disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet to-cyan px-4 py-2.5 text-sm font-medium text-white shadow-[0_8px_24px_-10px_rgba(255,94,44,0.5)] transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Send className="h-4 w-4" />
           <span className="hidden sm:inline">Send</span>
         </button>
+        </div>
       </form>
     </div>
   );
@@ -649,7 +704,7 @@ export default function Chatbot({
         <button
           type="button"
           onClick={() => setCollapsed(false)}
-          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-br from-cyan-500 to-indigo-500 text-white shadow-xl shadow-cyan-500/35 ring-1 ring-white/20 transition hover:-translate-y-0.5 hover:shadow-cyan-400/40 cursor-pointer"
+          className="pointer-events-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-violet to-cyan text-night shadow-[0_12px_40px_-8px_rgba(255,94,44,0.5)] transition-transform hover:-translate-y-0.5"
           aria-label="Open chat"
         >
           <MessageCircle className="h-6 w-6" />

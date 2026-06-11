@@ -1,10 +1,7 @@
 "use client";
 
-"use client";
-
-import { heroProfile } from "@/lib/data";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { heroProfile } from "@/lib/data";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,8 +15,10 @@ const links = [
   { href: "/experience", label: "Experience" },
   { href: "/projects", label: "Projects" },
   { href: "/chat", label: "Chat" },
-  { href: "/contact", label: "Contact" },
 ];
+
+const isActive = (pathname: string | null, href: string) =>
+  href === "/" ? pathname === "/" : !!pathname?.startsWith(href);
 
 export function Navbar() {
   const pathname = usePathname();
@@ -30,43 +29,44 @@ export function Navbar() {
   }, [pathname]);
 
   return (
-    <motion.header
-      className="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2 text-slate-100">
-          <div className="relative h-10 w-10 overflow-hidden rounded-full border border-white/15 bg-white/5 shadow-lg shadow-cyan-500/20 ring-1 ring-cyan-400/30">
-            <Image
-              src={heroProfile.avatar}
-              alt={`${heroProfile.name} profile`}
-              fill
-              sizes="40px"
-              className="object-cover"
-              priority
-            />
-          </div>
-          <div className="flex flex-col leading-tight">
-            <span className="text-sm font-semibold">Sandeep M S</span>
-            <span className="text-xs text-slate-400">
-              Full Stack & AI Platform Engineer
+    <div className="sticky top-4 z-40 flex flex-col items-center px-4">
+      <header className="flex w-full max-w-fit items-center gap-2 rounded-full bg-[#0b0b0d]/80 p-1.5 pl-1.5 shadow-[0_18px_50px_-14px_rgba(0,0,0,0.5)] ring-1 ring-white/10 backdrop-blur-xl backdrop-saturate-150">
+        {/* brand with avatar */}
+        <Link
+          href="/"
+          className="group flex shrink-0 items-center gap-2.5 rounded-full py-1 pl-1 pr-2"
+        >
+          <span className="relative shrink-0">
+            <span className="block h-9 w-9 overflow-hidden rounded-full ring-1 ring-white/20 transition-transform group-hover:scale-105">
+              <Image
+                src={heroProfile.avatar}
+                alt={heroProfile.name}
+                width={36}
+                height={36}
+                className="h-full w-full object-cover"
+                priority
+              />
             </span>
-          </div>
+            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-white ring-2 ring-[#0b0b0d]" />
+          </span>
+          <span className="hidden text-sm font-semibold text-white sm:block">
+            {heroProfile.name}
+          </span>
         </Link>
-        <nav className="hidden items-center gap-2 text-sm sm:flex">
+
+        {/* desktop links */}
+        <nav className="hidden items-center gap-0.5 sm:flex">
           {links.map((link) => {
-            const active = pathname === link.href;
+            const active = isActive(pathname, link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "rounded-full px-3 py-2 transition-all duration-300 hover:bg-white/10",
+                  "rounded-full px-3.5 py-2 text-sm font-medium transition-colors",
                   active
-                    ? "bg-white/10 text-white shadow-inner"
-                    : "text-slate-300"
+                    ? "bg-white/15 text-white"
+                    : "text-white/60 hover:bg-white/10 hover:text-white",
                 )}
               >
                 {link.label}
@@ -74,33 +74,50 @@ export function Navbar() {
             );
           })}
         </nav>
+
+        {/* contact CTA */}
+        <Link
+          href="/contact"
+          className={cn(
+            "hidden items-center rounded-full px-5 py-2 text-sm font-semibold transition-transform duration-300 hover:scale-[1.03] sm:inline-flex",
+            isActive(pathname, "/contact")
+              ? "bg-accent text-night"
+              : "bg-white text-[#0b0b0d]",
+          )}
+        >
+          Contact
+        </Link>
+
+        {/* mobile toggle */}
         <button
           type="button"
           onClick={() => setOpen((prev) => !prev)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-slate-100 transition hover:bg-white/10 sm:hidden"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/15 transition-colors hover:bg-white/20 sm:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
-      </div>
+      </header>
+
+      {/* mobile menu */}
       <div
         className={cn(
-          "sm:hidden transition-[max-height,opacity] duration-300 ease-out overflow-hidden border-t border-white/10 bg-slate-950/95 backdrop-blur",
-          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          "w-full max-w-sm overflow-hidden transition-[max-height,opacity] duration-300 ease-out sm:hidden",
+          open ? "mt-2 max-h-96 opacity-100" : "max-h-0 opacity-0",
         )}
       >
-        <div className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 text-sm sm:px-6 lg:px-8">
-          {links.map((link) => {
-            const active = pathname === link.href;
+        <div className="flex flex-col rounded-3xl bg-[#0b0b0d]/90 p-2 ring-1 ring-white/10 backdrop-blur-xl">
+          {[...links, { href: "/contact", label: "Contact" }].map((link) => {
+            const active = isActive(pathname, link.href);
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "rounded-xl px-3 py-3 transition-all duration-200",
+                  "rounded-2xl px-4 py-3 text-sm font-medium transition-colors",
                   active
-                    ? "bg-white/10 text-white shadow-inner"
-                    : "text-slate-300 hover:bg-white/10"
+                    ? "bg-white/15 text-white"
+                    : "text-white/65 hover:bg-white/10 hover:text-white",
                 )}
               >
                 {link.label}
@@ -109,6 +126,6 @@ export function Navbar() {
           })}
         </div>
       </div>
-    </motion.header>
+    </div>
   );
 }

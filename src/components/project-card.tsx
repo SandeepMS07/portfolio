@@ -1,75 +1,142 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, Star } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import type { Project } from "@/lib/data";
-import { Badge } from "./ui/badge";
-import { Card } from "./ui/card";
-import { cn } from "@/lib/utils";
+
+const ease = [0.22, 1, 0.36, 1] as const;
 
 type ProjectCardProps = {
   project: Project;
   index?: number;
+  wide?: boolean;
 };
 
-export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 12, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.35, delay: index * 0.04, ease: "easeOut" }}
-    >
-      <Card
-        className={cn(
-          "relative h-full cursor-pointer overflow-hidden gap-4 border-white/15 bg-linear-to-br from-slate-900/90 via-slate-900/80 to-slate-950/95 shadow-2xl shadow-cyan-500/10",
-          project.highlight && "border-cyan-400/40 ring-1 ring-cyan-400/25"
-        )}
-      >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(34,211,238,0.08),transparent_40%),radial-gradient(circle_at_80%_10%,rgba(99,102,241,0.08),transparent_35%)]" />
-        <div className="relative flex flex-col gap-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="space-y-1">
-              <h3 className="text-lg font-semibold text-white">
-                {project.title}
-              </h3>
-              <p className="text-sm text-cyan-100/90">{project.role}</p>
-            </div>
-            {project.highlight ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-cyan-500/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-cyan-50">
-                <Star className="h-3.5 w-3.5" />
-                Highlight
-              </span>
-            ) : null}
-          </div>
+export function ProjectCard({ project, index = 0, wide = false }: ProjectCardProps) {
+  const num = String(index + 1).padStart(2, "0");
+  const primaryTag = project.tags[0];
+  const visibleTags = project.tags.slice(1, wide ? 7 : 4);
+  const hiddenCount = project.tags.length - (1 + visibleTags.length);
 
-          <p className="text-sm leading-relaxed text-slate-200">
+  return (
+    <motion.article
+      layout
+      initial={{ opacity: 0, scale: 0.97, y: 14 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.97 }}
+      transition={{ duration: 0.4, ease, layout: { duration: 0.45, ease } }}
+      className={`glass card-glow group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] p-6 sm:p-7 ${
+        wide ? "sm:col-span-2" : ""
+      }`}
+    >
+      {/* featured gradient top accent */}
+      {project.highlight && (
+        <span
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-[#ff9347] via-accent to-[#e63d12]"
+        />
+      )}
+
+      {/* hover warm glow */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -inset-px rounded-[1.75rem] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(540px circle at 50% -20%, rgba(255,94,44,0.16), transparent 70%)",
+        }}
+      />
+
+      <div
+        className={
+          wide
+            ? "relative grid gap-x-7 gap-y-5 sm:grid-cols-[auto_1fr] sm:items-start"
+            : "relative flex h-full flex-col"
+        }
+      >
+        {/* poster number + meta rail */}
+        <div
+          className={`flex items-center justify-between gap-3 ${
+            wide ? "sm:flex-col sm:items-start sm:justify-start sm:gap-4" : ""
+          }`}
+        >
+          <span
+            className={`font-poster leading-[0.85] text-aurora ${
+              wide ? "text-6xl sm:text-7xl" : "text-5xl"
+            }`}
+          >
+            {num}
+          </span>
+          {project.highlight ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-accent/12 px-2.5 py-1 text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-accent ring-1 ring-accent/25">
+              <Sparkles className="h-3 w-3" />
+              Featured
+            </span>
+          ) : (
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/8 text-fg-dim ring-1 ring-white/12 transition-colors duration-300 group-hover:bg-accent group-hover:text-white">
+              <ArrowUpRight className="h-4 w-4" />
+            </span>
+          )}
+        </div>
+
+        {/* content */}
+        <div className={`flex flex-col ${wide ? "" : "mt-5 flex-1"}`}>
+          <span className="w-fit rounded-full bg-accent/10 px-2.5 py-0.5 text-[0.625rem] font-semibold uppercase tracking-[0.12em] text-accent ring-1 ring-accent/15">
+            {primaryTag}
+          </span>
+
+          <h3
+            className={`mt-3 font-semibold leading-snug tracking-tight text-fg ${
+              wide ? "text-xl sm:text-2xl" : "text-lg"
+            }`}
+          >
+            {project.title}
+          </h3>
+          <p className="mt-1 text-sm font-medium text-fg-dim">{project.role}</p>
+
+          <p
+            className={`mt-3 text-sm leading-relaxed text-fg-dim ${
+              wide ? "" : "line-clamp-3"
+            }`}
+          >
             {project.description}
           </p>
 
-          <div className="flex flex-wrap gap-2">
-            {project.tags.map((tag) => (
-              <Badge key={tag} className="border-white/15 bg-white/5 text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
+          {visibleTags.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-1.5">
+              {visibleTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-full bg-white/8 px-2.5 py-0.5 text-[0.6875rem] text-fg-dim ring-1 ring-white/12"
+                >
+                  {tag}
+                </span>
+              ))}
+              {hiddenCount > 0 && (
+                <span className="px-1.5 py-0.5 text-[0.6875rem] text-fg-faint">
+                  +{hiddenCount}
+                </span>
+              )}
+            </div>
+          )}
 
-          <div className="mt-2 flex flex-wrap gap-2">
+          {/* links */}
+          <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-line pt-5">
             {project.links.map((link) => (
               <Link
                 key={link.href + link.label}
                 href={link.href}
                 target="_blank"
-                className="group inline-flex items-center gap-2 rounded-full bg-linear-to-r from-cyan-500/20 to-indigo-500/20 px-3 py-2 text-xs font-semibold text-cyan-100 transition hover:from-cyan-500/35 hover:to-indigo-500/35"
+                className="group/link inline-flex items-center gap-1 text-sm font-medium text-fg-dim transition-colors hover:text-accent"
               >
                 {link.label}
-                <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                <ArrowUpRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5" />
               </Link>
             ))}
           </div>
         </div>
-      </Card>
-    </motion.div>
+      </div>
+    </motion.article>
   );
 }

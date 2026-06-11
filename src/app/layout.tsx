@@ -1,33 +1,45 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Sora, Manrope, JetBrains_Mono, Anton } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { BackgroundFX } from "@/components/background";
-import { ThreeBackground } from "@/components/three-background";
 import { ChatRedirectInput } from "@/components/ChatRedirectInput";
-import { heroProfile } from "@/lib/data";
 import { VisitTracker } from "@/components/visit-tracker";
+import { AuroraBackground } from "@/components/aurora-background";
+import { LiquidGlassFilter } from "@/components/liquid-glass-filter";
 import { Analytics } from "@vercel/analytics/react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const display = Sora({
+  variable: "--font-sora",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const body = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const mono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const poster = Anton({
+  variable: "--font-anton",
+  subsets: ["latin"],
+  weight: "400",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Sandeep M S — Full Stack & AI Platform Engineer",
+  title: "Sandeep M S — AI Engineer & Full Stack Developer",
   description:
-    "Portfolio for Sandeep M S showcasing full stack engineering, AI voice/chat bots, multi-tenant SaaS, and mobile builds.",
+    "Portfolio for Sandeep M S — AI Engineer building LLM & voice agents, AI chat platforms, and multi-tenant SaaS, plus full stack and mobile builds.",
   icons: {
-    icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-    ],
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
     shortcut: "/favicon.svg",
     apple: "/favicon.svg",
   },
@@ -41,18 +53,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-slate-950 text-slate-100 antialiased`}
+        className={`${display.variable} ${body.variable} ${mono.variable} ${poster.variable} min-h-screen bg-night text-fg antialiased`}
       >
-        <div className="relative min-h-screen">
-          <ThreeBackground />
-          <BackgroundFX />
-          <div className="relative z-10 flex min-h-screen flex-col">
-            <Navbar />
-            <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-16 pt-6 sm:px-6 lg:px-8">
-              {children}
-            </main>
-            <Footer />
-          </div>
+        <AuroraBackground />
+        <LiquidGlassFilter />
+        <div className="relative z-10 flex min-h-screen flex-col">
+          <Navbar />
+          <main className="mx-auto w-full max-w-[88rem] flex-1 px-4 pb-24 pt-10 sm:px-6 lg:px-10">
+            {children}
+          </main>
+          <Footer />
         </div>
         <ChatRedirectInput />
         <VisitTracker />

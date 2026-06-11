@@ -319,6 +319,7 @@ export type ExperienceItem = {
   period: string;
   location: string;
   highlights: string[];
+  stack?: string[];
 };
 
 export const experiences: ExperienceItem[] = [
@@ -333,6 +334,7 @@ export const experiences: ExperienceItem[] = [
       "Developed Luna AI Voice Agent using Ultravox + Plivo + FastAPI + Gemini for low-latency conversations.",
       "Led key modules in AuraML (multi-realm SSO, Razorpay billing, ECDSA licensing).",
     ],
+    stack: ["FastAPI", "Next.js", "MongoDB", "Ultravox", "Gemini", "SSO/RBAC"],
   },
   {
     company: "Turbostart",
@@ -345,6 +347,7 @@ export const experiences: ExperienceItem[] = [
       "Developed Realm Wealth mobile app for luxury real estate experiences.",
       "Shipped portals for Ideabaaz (ZeeTV), Scout by TS, Alumni Management, Startup Portal, and more.",
     ],
+    stack: ["Next.js", "Socket.IO", "Mobile", "Salesforce", "Razorpay"],
   },
   {
     company: "LearnCab (Nulurn Edutech Private Limited)",
@@ -356,6 +359,7 @@ export const experiences: ExperienceItem[] = [
       "Improved reliability and observability across web surfaces while shipping new content features.",
       "Collaborated with product/design to streamline onboarding and engagement funnels.",
     ],
+    stack: ["React", "Node.js", "REST APIs"],
   },
   {
     company: "LearnCab (Nulurn Edutech Private Limited)",
@@ -366,6 +370,7 @@ export const experiences: ExperienceItem[] = [
       "Contributed to React UI components and internal tooling with clean, reusable patterns.",
       "Implemented QA fixes and performance tweaks across web flows.",
     ],
+    stack: ["React", "QA", "UI"],
   },
   {
     company: "Gofo Technologies",
@@ -376,30 +381,31 @@ export const experiences: ExperienceItem[] = [
       "Supported web feature delivery and testing, gaining hands-on experience with production codebases.",
       "Assisted in debugging, documentation, and small UI enhancements.",
     ],
+    stack: ["Web", "Testing", "Debugging"],
   },
 ];
 
 export const heroHighlights = [
   "Multi-tenant AI chat & voice (KAI)",
   "DIY white-labeled bot demos (KAI Insights)",
-  "FinOps chargeback & unit economics (Cloudverse)",
+  "Low-latency AI voice agent (Luna)",
 ];
 
 export const heroContent = {
-  badge: "Full Stack · AI & FinOps",
-  heading: "Sandeep M S — Full Stack, AI & FinOps Engineer",
+  badge: "AI Engineer",
+  heading: "Sandeep M S — AI Engineer & Full Stack Developer",
   subheading:
-    "FastAPI • Next.js • Ionic • Multi-tenant SaaS • AI Voice & Chat Bots • FinOps (Chargeback & Unit Economics)",
+    "AI Engineer building LLM & voice agents, chat platforms, and multi-tenant SaaS · FastAPI • Next.js • Ultravox • Gemini",
   ctaProjects: "/projects",
   ctaResume: "/sandeep-m-s-resume.pdf",
 };
 
 export const heroProfile = {
   name: "Sandeep M S",
-  title: "Full Stack, AI & FinOps Engineer",
+  title: "AI Engineer & Full Stack Developer",
   role: "Product Engineer @ Turbostart",
   period: "2025 – Present",
-  tag: "AI + FinOps",
+  tag: "AI Engineer",
   avatar: "/profile.jpeg",
   stats: [
     { label: "Software Engineer", value: "2022 – 2025" },
@@ -409,9 +415,9 @@ export const heroProfile = {
 
 export const homeSnapshot = {
   label: "Snapshot",
-  title: "Full Stack, AI & FinOps Engineer",
+  title: "AI Engineer & Full Stack Developer",
   description:
-    "Building multi-tenant SaaS, AI voice/chat systems, and FinOps analytics with a production-first mindset.",
+    "Building LLM & voice agents, AI chat platforms, and multi-tenant SaaS with a production-first mindset.",
   tags: ["4+ years", "Turbostart", "Bengaluru"],
 };
 
@@ -419,14 +425,43 @@ export const homeFocusAreas = {
   label: "Focus Areas",
   items: [
     "AI voice/chat agents (Ultravox, Plivo, Gemini)",
+    "LLM orchestration, RAG & structured extraction",
     "Multi-tenant SaaS with auth, billing, licensing",
-    "FinOps chargeback + unit economics + cloud cost analytics",
   ],
 };
 
 export const homeAvailability = {
   label: "Let’s work",
-  title: "Available for backend / full-stack / AI platform roles",
+  title: "Available for AI engineering / full-stack roles",
   description:
     "Quick turnarounds on proof-of-concepts and production rollouts.",
 };
+
+export type Recommendation = {
+  name: string;
+  title: string;
+  relation: string;
+  quote: string;
+  avatar?: string;
+};
+
+export const recommendations: Recommendation[] = [
+  {
+    name: "Gokul Sundar",
+    title:
+      "Solutions Architect / Builder specialized in building user-centric applications leveraging AI to solve real-world problems.",
+    relation: "Senior to Sandeep · May 2026",
+    avatar: "/gokulsundar.jpeg",
+    quote:
+      "Got the opportunity to work with Sandeep while delivering highly mission-critical projects like TS Bridge and T20 Mumbai (MCA). He took up the responsibility of lead engineer to not only implement complex features like payment gateways, caching and authentication but also played a key role to get the apps published in Play/App Store — handling complex Ionic/Appflow builds for over-the-air updates. He has a good sense about product development and contributed greatly to discussions around user experience and data security. He has always been a good team player, mentoring junior developers and guiding them towards the product goals.",
+  },
+  {
+    name: "Sahil Choudhary",
+    title:
+      "AI Engineer | Founder @ NativeBridge | Ex-Postman | LLM Agent Workflows & Infra",
+    relation: "Sandeep’s client · Jan 2026",
+    avatar: "/sahilchowdary.png",
+    quote:
+      "I had the pleasure of working with Sandeep on NativeBridge, where he consistently proved to be a strong and dependable engineer. He has a solid grasp of fundamentals, writes clean and thoughtful code, and takes ownership of the problems he works on. Beyond technical skills, he is proactive, collaborative, and easy to work with. I’d happily recommend Sandeep to any team looking for a reliable and capable engineer.",
+  },
+];
