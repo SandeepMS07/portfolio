@@ -502,7 +502,7 @@ export default function Chatbot({
       ref={panelRef}
       className={`glass pointer-events-auto relative flex flex-col overflow-hidden rounded-3xl shadow-[0_30px_90px_-25px_rgba(0,0,0,0.85)] ${
         isPage
-          ? "h-[82vh] min-h-[540px] w-full max-h-[calc(100vh-150px)]"
+          ? "h-[68vh] min-h-[440px] w-full max-h-[calc(100dvh-210px)] sm:h-[82vh] sm:max-h-[calc(100vh-150px)]"
           : "h-[60vh] w-[calc(100vw-2rem)] max-w-[440px]"
       }`}
     >

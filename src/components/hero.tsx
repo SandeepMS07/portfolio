@@ -50,7 +50,7 @@ export function Hero() {
 
       {/* name */}
       <motion.h1
-        className="mt-12 text-5xl font-semibold leading-[1.05] tracking-tight text-fg sm:text-7xl"
+        className="mt-10 text-[2.75rem] font-semibold leading-[1.05] tracking-tight text-fg sm:mt-12 sm:text-7xl"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.7, ease }}
@@ -81,14 +81,14 @@ export function Hero() {
 
       {/* CTAs — dark pills with subtle glow */}
       <motion.div
-        className="mt-9 flex flex-col gap-3 sm:flex-row"
+        className="mt-9 flex w-full flex-row gap-3 sm:w-auto"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35, duration: 0.5 }}
       >
         <Link
           href={heroContent.ctaProjects}
-          className="btn-shine group relative inline-flex items-center justify-center gap-2 rounded-full bg-[#17120e] px-7 py-3.5 text-sm font-semibold text-white shadow-[0_0_44px_-10px_rgba(255,94,44,0.5)] ring-1 ring-white/12 transition-all duration-300 hover:ring-accent/40"
+          className="btn-shine group relative inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-[#17120e] px-5 py-3.5 text-sm font-semibold text-white shadow-[0_0_44px_-10px_rgba(255,94,44,0.5)] ring-1 ring-white/12 transition-all duration-300 hover:ring-accent/40 sm:flex-none sm:px-7"
         >
           View Projects
           <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
@@ -98,7 +98,7 @@ export function Hero() {
           download
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-fg ring-1 ring-white/15 transition-colors duration-300 hover:bg-white/8"
+          className="inline-flex flex-1 items-center justify-center gap-2 rounded-full px-5 py-3.5 text-sm font-semibold text-fg ring-1 ring-white/15 transition-colors duration-300 hover:bg-white/8 sm:flex-none sm:px-7"
         >
           Download Résumé
           <Download className="h-4 w-4" />
@@ -107,7 +107,7 @@ export function Hero() {
 
       {/* unified glass bar — profile · divider · discipline tiles */}
       <motion.div
-        className="mt-16 w-full max-w-3xl text-left"
+        className="mt-10 w-full max-w-3xl text-left sm:mt-16"
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.7, ease }}
@@ -154,19 +154,37 @@ export function Hero() {
       </motion.div>
 
       <motion.div
-        className="mt-12 flex flex-wrap justify-center gap-2"
+        className="mt-8 w-full sm:mt-12"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7, duration: 0.6 }}
       >
-        {heroHighlights.map((item) => (
-          <span
-            key={item}
-            className="glass rounded-full px-4 py-2 text-xs text-fg-dim"
-          >
-            {item}
-          </span>
-        ))}
+        {/* mobile: always-scrolling marquee */}
+        <div className="marquee-mask group overflow-hidden sm:hidden">
+          <div className="animate-marquee flex w-max gap-2 group-hover:[animation-play-state:paused]">
+            {[...heroHighlights, ...heroHighlights].map((item, i) => (
+              <span
+                key={`${item}-${i}`}
+                aria-hidden={i >= heroHighlights.length}
+                className="glass shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[0.6875rem] text-fg-dim"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* desktop: static centered chips */}
+        <div className="hidden flex-wrap justify-center gap-2 sm:flex">
+          {heroHighlights.map((item) => (
+            <span
+              key={item}
+              className="glass rounded-full px-4 py-2 text-xs text-fg-dim"
+            >
+              {item}
+            </span>
+          ))}
+        </div>
       </motion.div>
     </section>
   );

@@ -20,6 +20,8 @@ export interface GlobeMarker {
 export interface Globe3DConfig {
   /** Globe radius */
   radius?: number;
+  /** Camera distance as a multiple of radius (lower = globe appears larger) */
+  cameraDistanceFactor?: number;
   /** Globe base color (used as fallback or tint) */
   globeColor?: string;
   /** URL to the Earth texture map */
@@ -413,9 +415,9 @@ function Scene({ markers, config, onMarkerClick, onMarkerHover }: SceneProps) {
 
   // Set initial camera position (pulled back to accommodate markers)
   React.useEffect(() => {
-    camera.position.set(0, 0, config.radius * 3.5);
+    camera.position.set(0, 0, config.radius * config.cameraDistanceFactor);
     camera.lookAt(0, 0, 0);
-  }, [camera, config.radius]);
+  }, [camera, config.radius, config.cameraDistanceFactor]);
 
   return (
     <>
@@ -489,6 +491,7 @@ function LoadingFallback() {
 
 const defaultConfig: Required<Globe3DConfig> = {
   radius: 2,
+  cameraDistanceFactor: 3.5,
   globeColor: "#1a1a2e",
   textureUrl: DEFAULT_EARTH_TEXTURE,
   bumpMapUrl: DEFAULT_BUMP_TEXTURE,
@@ -538,7 +541,7 @@ export function Globe3D({
           fov: 45,
           near: 0.1,
           far: 1000,
-          position: [0, 0, mergedConfig.radius * 3.5],
+          position: [0, 0, mergedConfig.radius * mergedConfig.cameraDistanceFactor],
         }}
         style={{
           background: mergedConfig.backgroundColor || "transparent",

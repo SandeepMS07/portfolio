@@ -71,8 +71,42 @@ export function BlogTeaser({ posts }: { posts: BlogPostMeta[] }) {
 
           <Link
             href={`/blog/${lead.slug}`}
-            className="relative grid gap-7 p-7 sm:p-8 md:grid-cols-[1.2fr_1fr] md:items-center"
+            className="relative grid gap-5 p-5 sm:gap-7 sm:p-8 md:grid-cols-[1.2fr_1fr] md:items-center"
           >
+            {/* mobile-only visual banner (app-style cover) */}
+            <div
+              aria-hidden
+              className="relative flex h-32 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#16171e] to-[#0a0b0f] ring-1 ring-white/8 md:hidden"
+            >
+              <motion.div
+                className="absolute h-40 w-40 rounded-full"
+                style={{
+                  background:
+                    "radial-gradient(circle, rgba(255,94,44,0.32), transparent 60%)",
+                }}
+                animate={{ scale: [0.9, 1.05, 0.9] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.div
+                className="absolute h-20 w-20 rounded-full border border-accent/40"
+                animate={{ scale: [1, 1.6, 1], opacity: [0.7, 0, 0.7] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeOut" }}
+              />
+              <div className="relative flex h-14 w-14 items-center justify-center rounded-full border border-accent bg-night">
+                <span className="font-mono text-[0.6rem] font-semibold tracking-[0.18em] text-accent">
+                  API
+                </span>
+              </div>
+              <div className="absolute bottom-3 right-4 text-right">
+                <div className="font-poster text-2xl leading-none text-aurora">
+                  540K+
+                </div>
+                <div className="font-mono text-[0.55rem] uppercase tracking-[0.2em] text-fg-faint">
+                  users
+                </div>
+              </div>
+            </div>
+
             {/* left: copy */}
             <div className="flex flex-col">
               <div className="flex flex-wrap items-center gap-2">
@@ -107,10 +141,10 @@ export function BlogTeaser({ posts }: { posts: BlogPostMeta[] }) {
                 </span>
               </div>
 
-              <div className="mt-7">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-night transition-transform duration-300 group-hover:-translate-y-0.5">
+              <div className="mt-6 sm:mt-7">
+                <span className="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-accent px-4 py-3 text-sm font-semibold text-night transition-transform duration-300 group-hover:-translate-y-0.5 sm:w-auto sm:py-2 sm:text-xs">
                   Read the writeup
-                  <ArrowUpRight className="h-3.5 w-3.5" />
+                  <ArrowUpRight className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                 </span>
               </div>
             </div>

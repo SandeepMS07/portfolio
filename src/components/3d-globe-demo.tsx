@@ -16,6 +16,7 @@ export default function Globe3DDemo() {
       markers={sampleMarkers}
       className="h-full"
       config={{
+        cameraDistanceFactor: 3.1,
         textureUrl:
           "https://unpkg.com/three-globe@2.31.0/example/img/earth-night.jpg",
         emissiveColor: "#ff8a45",

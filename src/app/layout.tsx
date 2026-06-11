@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Sora, Manrope, JetBrains_Mono, Anton } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
+import { MobileTabBar } from "@/components/mobile-tab-bar";
 import { Footer } from "@/components/footer";
 import { ChatRedirectInput } from "@/components/ChatRedirectInput";
 import { VisitTracker } from "@/components/visit-tracker";
@@ -59,12 +60,13 @@ export default function RootLayout({
         <LiquidGlassFilter />
         <div className="relative z-10 flex min-h-screen flex-col">
           <Navbar />
-          <main className="mx-auto w-full max-w-[88rem] flex-1 px-4 pb-24 pt-10 sm:px-6 lg:px-10">
+          <main className="mx-auto w-full max-w-[88rem] flex-1 px-4 pt-10 sm:px-6 lg:px-10">
             {children}
           </main>
           <Footer />
         </div>
         <ChatRedirectInput />
+        <MobileTabBar />
         <VisitTracker />
         <Analytics />
       </body>

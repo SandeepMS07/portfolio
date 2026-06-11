@@ -2,11 +2,9 @@
 
 import { cn } from "@/lib/utils";
 import { heroProfile } from "@/lib/data";
-import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 
 const links = [
   { href: "/", label: "Home" },
@@ -23,11 +21,6 @@ const isActive = (pathname: string | null, href: string) =>
 
 export function Navbar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   return (
     <div className="sticky top-4 z-40 flex flex-col items-center px-4">
@@ -35,7 +28,7 @@ export function Navbar() {
         {/* brand with avatar */}
         <Link
           href="/"
-          className="group flex shrink-0 items-center gap-2.5 rounded-full py-1 pl-1 pr-2"
+          className="group flex shrink-0 items-center gap-2.5 rounded-full py-1 pl-1 pr-3 sm:pr-2"
         >
           <span className="relative shrink-0">
             <span className="block h-9 w-9 overflow-hidden rounded-full ring-1 ring-white/20 transition-transform group-hover:scale-105">
@@ -50,7 +43,7 @@ export function Navbar() {
             </span>
             <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-white ring-2 ring-[#0b0b0d]" />
           </span>
-          <span className="hidden text-sm font-semibold text-white sm:block">
+          <span className="text-sm font-semibold text-white">
             {heroProfile.name}
           </span>
         </Link>
@@ -76,7 +69,7 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* contact CTA */}
+        {/* contact CTA (desktop) */}
         <Link
           href="/contact"
           className={cn(
@@ -88,45 +81,7 @@ export function Navbar() {
         >
           Contact
         </Link>
-
-        {/* mobile toggle */}
-        <button
-          type="button"
-          onClick={() => setOpen((prev) => !prev)}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white ring-1 ring-white/15 transition-colors hover:bg-white/20 sm:hidden"
-          aria-label={open ? "Close menu" : "Open menu"}
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
       </header>
-
-      {/* mobile menu */}
-      <div
-        className={cn(
-          "w-full max-w-sm overflow-hidden transition-[max-height,opacity] duration-300 ease-out sm:hidden",
-          open ? "mt-2 max-h-96 opacity-100" : "max-h-0 opacity-0",
-        )}
-      >
-        <div className="flex flex-col rounded-3xl bg-[#0b0b0d]/90 p-2 ring-1 ring-white/10 backdrop-blur-xl">
-          {[...links, { href: "/contact", label: "Contact" }].map((link) => {
-            const active = isActive(pathname, link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "rounded-2xl px-4 py-3 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-white/15 text-white"
-                    : "text-white/65 hover:bg-white/10 hover:text-white",
-                )}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }

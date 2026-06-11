@@ -16,12 +16,12 @@ export default function Home() {
   const posts = getAllPosts();
 
   return (
-    <div className="space-y-28 pb-20">
+    <div className="space-y-10 sm:space-y-28">
       <Hero />
 
       {/* statement + 3D globe */}
-      <section className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
-        <div className="relative order-2 h-[380px] sm:h-[480px] lg:order-1">
+      <section className="grid items-center gap-4 sm:gap-6 lg:grid-cols-2 lg:gap-12">
+        <div className="relative order-2 h-[360px] sm:h-[480px] lg:order-1">
           <Globe3DDemo />
         </div>
         <p className="order-1 text-2xl font-medium leading-snug tracking-tight text-fg sm:text-4xl lg:order-2">
@@ -44,46 +44,46 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           {featured.map((project, idx) => (
             <Link
               key={project.title}
               href={project.links[0]?.href ?? "#"}
               target="_blank"
-              className="glass glass-sheen card-glow group relative flex flex-col overflow-hidden rounded-3xl p-6"
+              className="glass glass-sheen card-glow group relative flex flex-col overflow-hidden rounded-2xl p-4 sm:rounded-3xl sm:p-6"
             >
               {/* watermark index */}
               <span
                 aria-hidden
-                className="pointer-events-none absolute right-4 top-1 font-display text-7xl font-bold leading-none text-fg/[0.05]"
+                className="pointer-events-none absolute right-3 top-0 font-display text-5xl font-bold leading-none text-fg/[0.05] sm:right-4 sm:top-1 sm:text-7xl"
               >
                 {String(idx + 1).padStart(2, "0")}
               </span>
 
               <div className="relative flex items-center justify-between">
-                <span className="rounded-full bg-accent/10 px-3 py-1 text-[0.625rem] font-semibold uppercase tracking-wide text-accent ring-1 ring-accent/15">
+                <span className="rounded-full bg-accent/10 px-2.5 py-1 text-[0.5625rem] font-semibold uppercase tracking-wide text-accent ring-1 ring-accent/15 sm:px-3 sm:text-[0.625rem]">
                   {project.tags[0]}
                 </span>
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/8 text-fg-dim ring-1 ring-white/12 transition-colors group-hover:bg-accent group-hover:text-night">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/8 text-fg-dim ring-1 ring-white/12 transition-colors group-hover:bg-accent group-hover:text-night sm:h-9 sm:w-9">
                   <ArrowUpRight className="h-4 w-4" />
                 </span>
               </div>
 
-              <div className="relative mt-8">
-                <h3 className="text-xl font-semibold leading-tight tracking-tight text-fg sm:text-2xl">
+              <div className="relative mt-5 sm:mt-8">
+                <h3 className="text-base font-semibold leading-tight tracking-tight text-fg sm:text-2xl">
                   {project.title}
                 </h3>
-                <p className="mt-1.5 text-sm font-medium text-fg-dim">
+                <p className="mt-1 text-xs font-medium text-fg-dim sm:mt-1.5 sm:text-sm">
                   {project.role}
                 </p>
-                <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-fg-dim">
+                <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-fg-dim sm:mt-3 sm:text-sm">
                   {project.description}
                 </p>
-                <div className="mt-4 flex flex-wrap gap-1.5">
+                <div className="mt-3 flex flex-wrap gap-1.5 sm:mt-4">
                   {project.tags.slice(1, 4).map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full bg-white/8 px-2.5 py-0.5 text-[0.6875rem] text-fg-dim ring-1 ring-white/12"
+                      className="rounded-full bg-white/8 px-2 py-0.5 text-[0.625rem] text-fg-dim ring-1 ring-white/12 sm:px-2.5 sm:text-[0.6875rem]"
                     >
                       {tag}
                     </span>
@@ -94,14 +94,14 @@ export default function Home() {
           ))}
           <Link
             href="/projects"
-            className={`glass card-glow group flex min-h-[210px] flex-col items-center justify-center gap-3 rounded-3xl text-center ${
+            className={`glass card-glow group col-span-2 flex min-h-[120px] flex-col items-center justify-center gap-3 rounded-2xl text-center sm:min-h-[210px] sm:rounded-3xl ${
               // When the featured count is even, this card lands alone
               // on the trailing row in a 2-column grid — span the full
               // row so the layout doesn't leave a lopsided empty cell.
-              featured.length % 2 === 0 ? "sm:col-span-2" : ""
+              featured.length % 2 === 0 ? "sm:col-span-2" : "sm:col-span-1"
             }`}
           >
-            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent ring-1 ring-accent/15 transition-colors group-hover:bg-accent group-hover:text-night">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent/10 text-accent ring-1 ring-accent/15 transition-colors group-hover:bg-accent group-hover:text-night sm:h-12 sm:w-12">
               <Plus className="h-5 w-5" />
             </span>
             <span className="font-medium text-fg-dim transition-colors group-hover:text-fg">
@@ -138,13 +138,7 @@ export default function Home() {
       {posts.length > 0 ? <BlogTeaser posts={posts} /> : null}
 
       {/* recommendations */}
-      <section className="space-y-8">
-        <div>
-          <span className="eyebrow">Recommendations</span>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-fg sm:text-4xl">
-            What people say
-          </h2>
-        </div>
+      <section>
         <Recommendations />
       </section>
 

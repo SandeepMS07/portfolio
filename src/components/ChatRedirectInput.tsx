@@ -26,13 +26,13 @@ export function ChatRedirectInput({
     if (!query) return;
     if (redirectedRef.current) return;
     redirectedRef.current = true;
+    setValue("");
     router.push(`/chat?q=${encodeURIComponent(query)}`);
   };
 
-  // Clear the quick input when returning to non-chat pages
+  // Re-arm the redirect guard when returning to non-chat pages
   useEffect(() => {
     if (hideOnChat) return;
-    setValue("");
     redirectedRef.current = false;
   }, [pathname, hideOnChat]);
 
@@ -45,7 +45,7 @@ export function ChatRedirectInput({
       onSubmit={handleSubmit}
       className={
         isFloating
-          ? "fixed bottom-5 right-5 z-40 flex w-[320px] max-w-[calc(100vw-2.5rem)] flex-col items-end"
+          ? "fixed bottom-5 right-5 z-40 hidden w-[320px] max-w-[calc(100vw-2.5rem)] flex-col items-end sm:flex"
           : "w-full max-w-xl"
       }
       style={

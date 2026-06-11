@@ -362,12 +362,12 @@ export function PlaygroundCarousel({ projects }: { projects: Project[] }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.45, delay: i * 0.06, ease }}
-              className="snap-start"
+              className="w-[78%] shrink-0 snap-start sm:w-[320px]"
             >
               <Link
                 href={project.links[0]?.href ?? "#"}
                 target="_blank"
-                className={`group relative flex h-[280px] w-[280px] shrink-0 flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br ${pal.bg} p-6 ring-1 ring-white/12 transition-transform duration-300 hover:-translate-y-1 sm:w-[320px]`}
+                className={`group relative flex h-[280px] w-full flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br ${pal.bg} p-6 ring-1 ring-white/12 transition-transform duration-300 hover:-translate-y-1`}
               >
                 {/* motif (decorative) */}
                 <div aria-hidden className="absolute inset-0 -z-0">

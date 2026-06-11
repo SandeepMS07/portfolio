@@ -29,23 +29,23 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative mt-24 overflow-hidden rounded-t-[2.5rem] bg-[#08080a] text-white">
+    <footer className="relative mt-24 ml-[calc(50%-50vw)] w-screen overflow-hidden bg-[#08080a] text-white sm:ml-0 sm:w-auto sm:rounded-t-[2.5rem]">
       {/* ambient top glow */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"
       />
 
-      <div className="mx-auto max-w-[88rem] px-6 pt-20 sm:px-10 sm:pt-28">
+      <div className="mx-auto max-w-[88rem] px-6 pb-[calc(env(safe-area-inset-bottom,0px)+5.25rem)] pt-12 sm:px-10 sm:pb-0 sm:pt-28">
         {/* CTA headline */}
         <div className="relative">
           <span
             aria-hidden
-            className="absolute -top-8 left-0 select-none text-6xl font-bold tracking-tight text-white/[0.04] sm:-top-12 sm:text-8xl"
+            className="absolute -top-6 left-0 select-none text-5xl font-bold tracking-tight text-white/[0.04] sm:-top-12 sm:text-8xl"
           >
             ship
           </span>
-          <h2 className="relative max-w-4xl text-5xl font-medium leading-[1.05] tracking-tight text-white/45 sm:text-7xl">
+          <h2 className="relative max-w-4xl text-4xl font-medium leading-[1.05] tracking-tight text-white/45 sm:text-7xl">
             <span className="font-semibold text-white">Let&apos;s</span> build
             <br />
             incredible things together.
@@ -53,7 +53,7 @@ export function Footer() {
         </div>
 
         {/* contact row */}
-        <div className="mt-14 grid gap-10 sm:grid-cols-3 sm:gap-8">
+        <div className="mt-10 grid gap-8 sm:mt-14 sm:gap-8">
           <div>
             <p className="text-xs uppercase tracking-widest text-white/40">
               Email
@@ -101,10 +101,10 @@ export function Footer() {
         </div>
 
         {/* divider */}
-        <div className="mt-16 h-px w-full bg-white/10" />
+        <div className="mt-10 h-px w-full bg-white/10 sm:mt-16" />
 
         {/* link columns + copyright */}
-        <div className="mt-8 grid gap-10 sm:grid-cols-3 sm:gap-8">
+        <div className="mt-8 grid grid-cols-2 gap-8 sm:grid-cols-3">
           <div>
             <p className="text-xs uppercase tracking-widest text-white/40">
               Menu
@@ -143,7 +143,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div className="sm:text-right">
+          <div className="col-span-2 sm:col-span-1 sm:text-right">
             <p className="text-sm font-medium text-white/85">Sandeep M S</p>
             <p className="mt-1 text-sm text-white/45">
               AI Engineer &amp; Full Stack Developer
@@ -155,20 +155,19 @@ export function Footer() {
         </div>
 
         {/* giant wordmark */}
-        <div className="pointer-events-none relative mt-16 select-none">
+        <div className="pointer-events-none relative mt-6 select-none sm:mt-16">
           <div
             aria-hidden
             className="absolute inset-x-0 bottom-0 h-1/2 bg-white/10 blur-[80px]"
           />
           <span
-            className="relative block w-full text-center font-bold leading-[0.78] tracking-tighter text-transparent"
+            className="relative block w-full translate-y-[4%] text-center font-bold leading-[0.78] tracking-tighter text-transparent sm:translate-y-[16%]"
             style={{
               fontSize: "clamp(3.5rem, 22vw, 18rem)",
               backgroundImage:
                 "linear-gradient(to bottom, rgba(255,255,255,0.92), rgba(255,94,44,0.45))",
               WebkitBackgroundClip: "text",
               backgroundClip: "text",
-              transform: "translateY(16%)",
             }}
           >
             SANDEEP
