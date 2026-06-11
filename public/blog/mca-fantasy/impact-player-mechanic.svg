@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-label="Impact Player mechanic">
+  <defs>
+    <pattern id="dots-ip" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.8" fill="#ffffff10"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="450" fill="#0a0b0f"/>
+  <rect width="800" height="450" fill="url(#dots-ip)"/>
+
+  <text x="40" y="36" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2.5" fill="#ff5e2c">FIG · 03 // IMPACT PLAYER MECHANIC — TIMELINE</text>
+
+  <!-- timeline axis -->
+  <line x1="60" y1="240" x2="740" y2="240" stroke="#ffffff20" stroke-width="1.5"/>
+  <g font-family="ui-monospace, monospace" font-size="9" letter-spacing="1.2" fill="#8c8c97">
+    <text x="60" y="265">MATCH START</text>
+    <text x="280" y="265" text-anchor="middle">CARDS APPEAR</text>
+    <text x="500" y="265" text-anchor="middle">ACTIVATION SIGNAL</text>
+    <text x="740" y="265" text-anchor="end">END</text>
+  </g>
+
+  <!-- timeline markers -->
+  <circle cx="60" cy="240" r="5" fill="#ff5e2c"/>
+  <circle cx="280" cy="240" r="5" fill="#ff5e2c"/>
+  <circle cx="500" cy="240" r="7" fill="#ff5e2c"/>
+  <circle cx="500" cy="240" r="12" fill="none" stroke="#ff5e2c" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="740" cy="240" r="5" fill="#ff5e2c"/>
+
+  <!-- above timeline: reserve state -->
+  <g font-family="ui-sans-serif, system-ui" fill="#f4f5f7">
+    <rect x="40" y="80" width="190" height="130" rx="12" fill="#16171e" stroke="#ffffff20"/>
+    <text x="55" y="106" font-size="10" font-family="ui-monospace, monospace" letter-spacing="1.5" fill="#ff9347">RESERVE — SILENT</text>
+    <text x="55" y="130" font-size="12" font-weight="600">is_reserve_player = TRUE</text>
+    <text x="55" y="150" font-size="12" font-weight="600">is_impact_player = FALSE</text>
+    <text x="55" y="174" font-size="11" fill="#8c8c97">accumulating stats</text>
+    <text x="55" y="190" font-size="11" fill="#8c8c97">in shadow — 0 points</text>
+  </g>
+
+  <g font-family="ui-sans-serif, system-ui" fill="#f4f5f7">
+    <rect x="280" y="80" width="190" height="130" rx="12" fill="#16171e" stroke="#ffffff20"/>
+    <text x="295" y="106" font-size="10" font-family="ui-monospace, monospace" letter-spacing="1.5" fill="#ff9347">FEED OBSERVES</text>
+    <text x="295" y="130" font-size="11" fill="#bcbcc6">Card data shows</text>
+    <text x="295" y="150" font-size="11" fill="#bcbcc6">PlayerID 5234 batting</text>
+    <text x="295" y="174" font-size="11" fill="#8c8c97">resolver: vendor →</text>
+    <text x="295" y="190" font-size="11" fill="#8c8c97">canonical (incl. reserves)</text>
+  </g>
+
+  <g font-family="ui-sans-serif, system-ui" fill="#f4f5f7">
+    <rect x="510" y="80" width="240" height="130" rx="12" fill="#0a0b0f" stroke="#ff5e2c" stroke-width="1.8"/>
+    <text x="525" y="106" font-size="10" font-family="ui-monospace, monospace" letter-spacing="1.5" fill="#ff9347">ACTIVATION (ONCE)</text>
+    <text x="525" y="130" font-size="11" fill="#f4f5f7" font-family="ui-monospace, monospace">UPDATE … SET is_impact_</text>
+    <text x="525" y="146" font-size="11" fill="#f4f5f7" font-family="ui-monospace, monospace">player = TRUE</text>
+    <text x="525" y="162" font-size="11" fill="#f4f5f7" font-family="ui-monospace, monospace">WHERE is_impact_player</text>
+    <text x="525" y="178" font-size="11" fill="#f4f5f7" font-family="ui-monospace, monospace">= FALSE RETURNING …</text>
+    <text x="525" y="200" font-size="10" fill="#ff9347" font-family="ui-monospace, monospace">+4 bonus · rescore entries</text>
+  </g>
+
+  <!-- below timeline: idempotency note -->
+  <g>
+    <rect x="40" y="310" width="710" height="80" rx="12" fill="#16171e" stroke="#ffffff14"/>
+    <text x="60" y="335" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.5" fill="#ff9347">IDEMPOTENCY — VIA RETURNING</text>
+    <text x="60" y="358" font-family="ui-sans-serif, system-ui" font-size="12" fill="#bcbcc6">A conditional UPDATE that returns a row only on the FIRST successful flip. Subsequent feed-fires UPDATE 0 rows</text>
+    <text x="60" y="376" font-family="ui-sans-serif, system-ui" font-size="12" fill="#bcbcc6">and the function short-circuits — no second +4, no second rescore.</text>
+  </g>
+
+  <text x="400" y="425" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.5" fill="#8c8c97">reserve carried silently · activation gated by single UPDATE · idempotent rescore</text>
+</svg>

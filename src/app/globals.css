@@ -227,3 +227,16 @@ h1, h2, h3, h4 {
 }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
 *::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.16); border-radius: 99px; }
+
+/* Hide scrollbars on elements that need clean horizontal scroll (e.g. the
+   playground carousel). Wins over the global * rule because the override
+   targets the same element. */
+.no-scrollbar {
+  scrollbar-width: none;          /* Firefox */
+  -ms-overflow-style: none;       /* legacy IE/Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;                  /* Chrome, Safari, Opera */
+  width: 0;
+  height: 0;
+}

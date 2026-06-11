@@ -4,19 +4,17 @@ import { Hero } from "@/components/hero";
 import { Recommendations } from "@/components/recommendations";
 import Globe3DDemo from "@/components/3d-globe-demo";
 import { Boxes } from "@/components/ui/background-boxes";
+import { BlogTeaser } from "@/components/blog/blog-teaser";
+import { PlaygroundCarousel } from "@/components/playground-carousel";
 import { projects } from "@/lib/data";
+import { getAllPosts } from "@/lib/blog";
 
 const featured = projects.filter((p) => p.highlight);
 const playground = projects.filter((p) => !p.highlight);
 
-const playgroundTints = [
-  "from-white/[0.08] to-white/[0.02]",
-  "from-white/[0.06] to-white/[0.02]",
-  "from-white/[0.09] to-white/[0.03]",
-  "from-white/[0.05] to-white/[0.02]",
-];
-
 export default function Home() {
+  const posts = getAllPosts();
+
   return (
     <div className="space-y-28 pb-20">
       <Hero />
@@ -96,7 +94,12 @@ export default function Home() {
           ))}
           <Link
             href="/projects"
-            className="glass card-glow group flex min-h-[210px] flex-col items-center justify-center gap-3 rounded-3xl text-center"
+            className={`glass card-glow group flex min-h-[210px] flex-col items-center justify-center gap-3 rounded-3xl text-center ${
+              // When the featured count is even, this card lands alone
+              // on the trailing row in a 2-column grid — span the full
+              // row so the layout doesn't leave a lopsided empty cell.
+              featured.length % 2 === 0 ? "sm:col-span-2" : ""
+            }`}
           >
             <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent ring-1 ring-accent/15 transition-colors group-hover:bg-accent group-hover:text-night">
               <Plus className="h-5 w-5" />
@@ -116,41 +119,23 @@ export default function Home() {
         </p>
       </section>
 
-      {/* playground */}
+      {/* playground — horizontal scroll-snap carousel with per-card motifs */}
       <section className="space-y-8">
         <div>
           <span className="eyebrow">Experiments · {playground.length}</span>
           <h2 className="mt-2 text-3xl font-semibold tracking-tight text-fg sm:text-4xl">
             Playground
           </h2>
+          <p className="mt-3 max-w-xl text-sm text-fg-dim">
+            Smaller builds and side bets — voice agents, investor tooling,
+            broadcast portals. Swipe through.
+          </p>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {playground.map((project, i) => (
-            <Link
-              key={project.title}
-              href={project.links[0]?.href ?? "#"}
-              target="_blank"
-              className={`group relative flex flex-col gap-2.5 overflow-hidden rounded-2xl bg-gradient-to-br ${
-                playgroundTints[i % playgroundTints.length]
-              } p-5 shadow-[0_12px_34px_-14px_rgba(40,48,96,0.35)] ring-1 ring-white/12 backdrop-blur-md transition-transform duration-300 hover:-translate-y-1`}
-            >
-              <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-white/15 blur-2xl" />
-              <div className="relative flex items-center justify-between">
-                <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[0.625rem] font-semibold uppercase tracking-wide text-fg-dim ring-1 ring-white/12">
-                  {project.tags[0]}
-                </span>
-                <ArrowUpRight className="h-4 w-4 text-fg-faint transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent" />
-              </div>
-              <h4 className="relative mt-1 text-sm font-semibold leading-snug text-fg">
-                {project.title}
-              </h4>
-              <p className="relative line-clamp-2 text-xs leading-relaxed text-fg-dim">
-                {project.description}
-              </p>
-            </Link>
-          ))}
-        </div>
+        <PlaygroundCarousel projects={playground} />
       </section>
+
+      {/* blog teaser — magazine-spread feature post + right rail */}
+      {posts.length > 0 ? <BlogTeaser posts={posts} /> : null}
 
       {/* recommendations */}
       <section className="space-y-8">

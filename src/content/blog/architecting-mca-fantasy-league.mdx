@@ -1,0 +1,485 @@
+---
+title: "Architecting the MCA Fantasy League — Real-Time Cricket Fantasy at 540K+ Users"
+description: "How I built the official Mumbai Cricket Association fantasy platform from zero — system topology, live scoring pipeline, the Impact Player mechanic, rotating-JWT auth, DPDP-ready PII at rest, and the production incident that taught me the most."
+publishedAt: "2026-06-11"
+tags: ["System Architecture", "Real-Time", "Production", "Cricket Fantasy"]
+cover: "/blog/mca-fantasy/hero.svg"
+---
+
+<AnimatedHero />
+
+In June 2026 the Mumbai Cricket Association launched its first official
+fantasy cricket platform on top of the T20 Mumbai League — the state-level
+T20 tournament played at Wankhede Stadium. I led the architecture and
+delivery end-to-end: three frontends, one backend, real-time scoring from
+live iSportz feeds, and a production launch that survived the chaos a
+live sports product always brings.
+
+This post is the architecture writeup I wish I'd had access to before I
+started. Stack choices, trade-offs, the mechanics I had to invent, and
+the one production incident that taught me more than any pre-launch
+design review.
+
+<StatGrid
+  stats={[
+    { value: "540K+", label: "Users served", sublabel: "Across MCA's fan platform" },
+    { value: "670", label: "Fantasy players", sublabel: "Engaged dedicated cohort" },
+    { value: "3", label: "Frontends", sublabel: "Web · Admin · Mobile" },
+    { value: "1", label: "Backend", sublabel: "Fastify · Postgres · Redis" },
+  ]}
+/>
+
+## The brief
+
+MCA already had a fan-engagement platform — `t20mumbai.com` — running fan
+polls and a "Viewers' Choice" feature. What it didn't have was fantasy.
+Two months out from the tournament, the ask landed: ship an official
+fantasy product for the T20 Mumbai League — multi-platform, real-time
+scored, admin-controlled, and able to live next to the existing fan
+platform without disrupting it.
+
+Constraints worth calling out upfront, because they shaped every
+subsequent choice:
+
+- **Real cricket data.** The iSportz CDN provides the official live feeds
+  for the tournament. There's no second source of truth — if iSportz
+  misbehaves, the system must absorb it gracefully.
+- **Three product surfaces.** A consumer web app, a native mobile app
+  (Capacitor wrapper around the same web), and an admin console — all
+  on a single backend.
+- **A real launch date.** First ball of the first match was non-negotiable.
+- **Existing users.** The 540K+ user base on the fan platform had to
+  remain intact and authenticated across the new product.
+
+## System topology
+
+Before drawing a single box on a diagram, I locked the topology: **one
+backend, three frontends, two stateful stores, two external vendors**.
+
+<Diagram
+  src="/blog/mca-fantasy/system-topology.svg"
+  alt="System topology — three frontends connect to one Fastify backend, which talks to Postgres, Redis, iSportz CDN, and Gupshup SMS"
+  caption="One backend, three frontends. The fantasy backend co-tenants the fan-poll / viewers-choice domain because the user table is shared — fragmenting it would have meant duplicate signups."
+/>
+
+The mobile app is a Capacitor shell wrapping a webview of the fantasy
+frontend. That choice was deliberate: shipping native iOS and Android
+in parallel with a web app, on a two-month clock, would have meant cutting
+something. With Capacitor, the same React code ships everywhere; the
+mobile layer adds bearer-token auth (instead of the web's httpOnly
+refresh cookies) and a small `X-Client` header for backend routing
+decisions.
+
+<Callout type="note" title="Why one backend, not two">
+  Fanpoll and viewers-choice live in the same backend as fantasy because
+  they share the user table. Splitting them would have meant separate
+  signups, separate sessions, and a constant sync nightmare. The
+  fantasy-only tables (`entry`, `contest`, `fantasy_match_player`, etc.)
+  are namespaced cleanly enough that the two domains coexist without
+  bleeding into each other.
+</Callout>
+
+## The data foundation — and the resolver pattern that makes it work
+
+The fantasy domain has three layers of identity:
+
+1. **Vendor IDs** — what iSportz's feed uses (`PlayerID`, `MatchID`).
+2. **Canonical IDs** — internal `fantasy_match_player.player_id` (`fmp.player_id`).
+3. **Display IDs** — what users see (jersey name, role badge, credits).
+
+Without a disciplined bridge between vendor and canonical, you end up
+silently dropping points because "PlayerID 5234 in card data" doesn't
+match "5234A in squad data" because iSportz changed how they suffix
+Impact Player rows mid-tournament.
+
+The bridge is a single column: `feed_player_unique_id`. Every
+`fantasy_match_player` row carries it; every score lookup goes through a
+resolver that maps `vendor PlayerID → fmp.player_id` by way of
+`feed_player_unique_id`. When that column was missing or stale, a
+**Layer-A name auto-learner** stepped in: fuzzy-match the player name to
+the squad, stamp the result back, and never look up by name again.
+
+```typescript
+// Simplified — real implementation includes IP/RP suffix stripping,
+// substring fallbacks, and per-match learning to avoid cross-match
+// pollution.
+async function resolveCanonicalId(
+  matchId: string,
+  vendorPlayerId: string,
+  playerName: string,
+): Promise<string | null> {
+  // Fast path: stamped feed_player_unique_id.
+  const stamped = await db.queryOne(
+    `SELECT player_id FROM fantasy_match_player
+     WHERE match_id = $1 AND feed_player_unique_id = $2`,
+    [matchId, vendorPlayerId],
+  );
+  if (stamped) return stamped.player_id;
+
+  // Layer A — name auto-learner. Match by name, stamp on hit so
+  // future lookups skip this branch.
+  const byName = await db.queryOne(
+    `SELECT player_id FROM fantasy_match_player
+     WHERE match_id = $1 AND normalize(player_name) = normalize($2)`,
+    [matchId, playerName],
+  );
+  if (byName) {
+    await db.query(
+      `UPDATE fantasy_match_player SET feed_player_unique_id = $1
+       WHERE match_id = $2 AND player_id = $3`,
+      [vendorPlayerId, matchId, byName.player_id],
+    );
+    return byName.player_id;
+  }
+  return null;
+}
+```
+
+This single pattern — vendor → canonical via a stamped bridge, with a
+learner as fallback — is the most important architectural call I made on
+this project. Every downstream system (scoring, Impact Player, admin
+panel) trusts the canonical ID and stays decoupled from feed quirks.
+
+## Live scoring pipeline
+
+Fantasy scoring is "easy" in the abstract (player did X → award Y
+points) and brutal in practice. The hard parts are:
+
+- Feeds arrive **partial and out of order**.
+- The same event can appear in multiple feed payloads (the latest
+  innings file vs. yesterday's matchsummary).
+- Users want to see deltas **instantly** when their team moves.
+- Anything that fails has to be **retryable without double-counting**.
+
+<Diagram
+  src="/blog/mca-fantasy/scoring-pipeline.svg"
+  alt="Scoring pipeline — iSportz CDN to ingest worker to normaliser to scorer to Postgres upsert plus WebSocket fan-out"
+  caption="Every step is replay-safe. Re-running a feed batch produces the same point totals — never doubles."
+/>
+
+The pipeline:
+
+1. **Ingest worker** polls iSportz JSONP feeds every few seconds.
+2. **Normaliser** strips JSONP wrappers, resolves canonical IDs, and
+   produces a flat list of `(player, event, value)` triples.
+3. **Scorer** applies the BRD point rules — runs, wickets, catches,
+   strike rate bonuses, economy bonuses, the +4 Impact Player activation
+   bonus, captain (2×) and vice-captain (1.5×) multipliers — and computes
+   the per-player point total **for this snapshot**.
+4. **Upsert** the per-player points into `entry_player_points` using a
+   single multi-row `INSERT … ON CONFLICT DO UPDATE`. The DB is the
+   reduce step.
+5. **Fan out** the affected `entry_id`s over WebSocket so any user
+   currently watching their team sees points tick live.
+
+The "scorer produces a snapshot, DB stores the snapshot" pattern is what
+makes it replay-safe. There's no "add 4 more points" logic anywhere —
+every score row is `SET points = $new`, not `points += $delta`. Re-run
+the same feed twice and you get the same totals.
+
+<Callout type="tip" title="Cap your fan-out">
+  Early on, every snapshot triggered a WS broadcast to every connected
+  user, even those not watching the affected match. Wireshark
+  immediately yelled at me. Now: snapshots emit to a per-match channel,
+  and clients subscribe only to the match they're viewing. Network drops
+  by ~95% during a live game.
+</Callout>
+
+## The Impact Player mechanic
+
+T20 Mumbai uses the Impact Player rule: each team carries one "designated
+reserve" alongside the playing XI, and can swap that reserve in mid-match
+for a strategic boost. In fantasy, this becomes a high-stakes pick — the
+user effectively bets on whether the reserve will be activated.
+
+<Diagram
+  src="/blog/mca-fantasy/impact-player-mechanic.svg"
+  alt="Impact Player activation timeline — reserve is carried silently until iSportz feed signals activation, at which point points are awarded and team rescored"
+  caption="A reserve's stats accumulate from the moment they appear in the feed. The system back-credits any points missed before the activation signal."
+/>
+
+Mechanically:
+
+- Every `fantasy_match_player` carries an `is_reserve_player` flag and an
+  `is_impact_player` flag.
+- A reserve scores no points by default — they're "silent" in the squad.
+- When iSportz's feed surfaces the reserve as actively performing (their
+  `PlayerID` shows up in card data, or the dedicated `(IP)`/`(RP)` suffix
+  flips on a card), the scorer treats it as **activation**:
+  1. Set `is_impact_player = true`, stamp `impact_activated_at`.
+  2. Award +4 activation bonus.
+  3. Rescore all entries that picked this reserve — back-crediting any
+     points their activity already generated before activation was
+     detected.
+
+The whole thing has to be **idempotent**. If the feed dropped the
+activation signal once and re-fired it five minutes later, the second
+fire must not award a second +4 or duplicate the rescore. The pattern:
+
+```typescript
+// Activation is gated by a single conditional UPDATE. Only the FIRST
+// successful UPDATE returns a row; subsequent calls UPDATE 0 rows and
+// the function short-circuits without awarding bonus or rescoring.
+const activated = await db.queryOne(
+  `UPDATE fantasy_match_player
+     SET is_impact_player    = TRUE,
+         impact_activated_at = now()
+   WHERE match_id              = $1
+     AND feed_player_unique_id = $2
+     AND is_reserve_player     = TRUE
+     AND is_impact_player      = FALSE
+   RETURNING player_id`,
+  [matchId, vendorPlayerId],
+);
+if (!activated) return; // already activated — short-circuit
+await awardActivationBonus(activated.player_id, matchId);
+await rescoreEntriesPicking(activated.player_id, matchId);
+```
+
+`RETURNING player_id` from the conditional UPDATE turns "is this the
+first activation?" from a question into a fact. No race, no double-fire.
+
+## Auth — rotating JWT with a multi-tab grace window
+
+For 540K users across web and mobile, the auth needs to be stateless
+enough to scale and stateful enough to support revocation. The shape I
+landed on:
+
+<Diagram
+  src="/blog/mca-fantasy/auth-flow.svg"
+  alt="Auth flow — access token in JWT, refresh token in httpOnly cookie (web) or bearer header (mobile), with rotation on every refresh and a 30s grace window"
+  caption="The web stores refresh tokens in httpOnly cookies; the mobile app uses bearer tokens (no cookie jar in a Capacitor webview can be trusted equally)."
+/>
+
+The pieces:
+
+- **Access token** — short-lived JWT, signed with HS256. Carries `sid`
+  (session ID) so revocation lookups don't need the full token.
+- **Refresh token** — opaque 32-byte hex, hashed at rest in
+  `fantasy_session.refresh_token_hash`. Raw token only ever lives in the
+  user's cookie / bearer header.
+- **One-time-use rotation** — every refresh issues a new refresh token
+  and invalidates the old one's hash.
+- **30-second grace window** — the prior rotation's hash is parked in
+  Redis with a 30s TTL. Two tabs racing the same refresh both succeed:
+  one wins the DB rotation; the other lands inside the grace window and
+  still gets a valid access token.
+
+The grace window is the kind of detail that sounds optional until you've
+shipped without it and watched users get silently logged out because two
+tabs refreshed simultaneously. The fix is small; the UX impact is huge.
+
+<Callout type="warning" title="Don't try to be too clever with revocation">
+  My first instinct was to make access tokens reference-count their
+  refresh token, so revoking the refresh would invalidate access. That
+  works on paper and breaks in production — stateless JWTs are checked
+  on every API call, and adding a Redis lookup per call collapses your
+  request rate. Instead: revoke pushes the session ID into a Redis set
+  with a TTL that outlives the longest unexpired access token. Revocation
+  becomes a cheap O(1) set lookup on the path that matters.
+</Callout>
+
+## The team-composition validator
+
+The fantasy XI is constrained: 11 players, role bounds per BRD, max 1
+Icon, max 7 from a single franchise, ≤100 credits, captain + vice-captain,
+optional U-19 booster pick. The bounds shifted mid-tournament — the
+BRD originally said `4-6 BAT / 2-3 AR / 3-4 BOWL` and was widened to
+`3-5 / 3-5 / 2-4` to give users more team-building freedom.
+
+That mid-tournament widening exposed a latent bug in the validator that
+taught me a useful lesson about **implicit invariants**:
+
+```typescript
+// OLD code:
+if (counts.BAT  < 4)  throw httpError(400, "need_at_least_4_bat");
+if (counts.AR   < 2)  throw httpError(400, "need_at_least_2_ar");
+if (counts.BOWL < 3)  throw httpError(400, "need_at_least_3_bowl");
+// "Upper bounds are implicit from the length-11 schema."
+```
+
+The comment was right — under the OLD bounds. With `4+2+3 = 9` mandatory
+slots and a total of 11, you literally cannot construct an invalid XI
+that satisfies the lower bounds. The two flex slots can't push BAT past
+6 without pushing AR or BOWL below their minimums.
+
+Widening the lower bounds to `3+3+2 = 8` gave users **three flex slots**.
+Now `6 BAT + 3 AR + 2 BOWL = 11` satisfies every lower bound and violates
+the BAT cap of 5. The "implicit upper bound" trick collapsed:
+
+```typescript
+// NEW code:
+if (counts.BAT  < 3)  throw httpError(400, "need_at_least_3_bat");
+if (counts.AR   < 3)  throw httpError(400, "need_at_least_3_ar");
+if (counts.BOWL < 2)  throw httpError(400, "need_at_least_2_bowl");
+if (counts.BAT  > 5)  throw httpError(400, "too_many_bat");
+if (counts.AR   > 5)  throw httpError(400, "too_many_ar");
+if (counts.BOWL > 4)  throw httpError(400, "too_many_bowl");
+```
+
+Lesson: when an invariant "is implied" by something else, document the
+chain of reasoning. The next person changing the inputs needs to know
+which assumptions to re-verify.
+
+## DPDP-readiness: PII at rest
+
+India's DPDP Act puts real teeth into how user PII is stored. For
+mobile-number and email, "encrypted at rest, displayable to admins"
+sounds contradictory the first time you hear it — hashing is one-way,
+encryption is two-way. The pattern that resolves the contradiction:
+
+<Diagram
+  src="/blog/mca-fantasy/pii-encryption-flow.svg"
+  alt="PII encryption flow — at rest the value is AES-256-GCM encrypted, plus a SHA-256 hash sidecar for lookups; admin reveal is gated by RBAC and audit-logged"
+  caption="Encryption for display, hash for lookup. The hash makes login by mobile fast and indexable; the encryption protects the raw value at rest."
+/>
+
+For each PII column you store **two values**:
+
+| Column | Type | Purpose |
+|---|---|---|
+| `mobile_enc` | BYTEA | AES-256-GCM ciphertext. Decrypt when an authorized context needs the plaintext. |
+| `mobile_hash` | TEXT | SHA-256 of normalized mobile + a server-side pepper. Indexed. Used for OTP lookup, dedupe, signup uniqueness. |
+
+The hash makes login fast — lookup by `mobile_hash` is a single indexed
+query. The pepper turns the hash into a useful protection: phone numbers
+have only ~10¹⁰ possible values, so without a pepper an attacker who
+steals the DB can build a rainbow table in minutes. With a server-side
+pepper that lives outside the DB, the rainbow table needs the pepper
+too — and if they have your app secrets, the DB exfiltration was the
+least of your problems.
+
+<Callout type="danger" title="Don't lose the encryption key">
+  If you lose the AES key, every encrypted column is permanently
+  unreadable. Back it up in two independent places (1Password + a sealed
+  envelope, KMS + manual export, whatever you trust). Once you go live
+  on encrypted PII, the key is now load-bearing infrastructure.
+</Callout>
+
+## The S4-M12 incident — and what it taught me
+
+Two weeks into the season, S4-M12 (Sarfaraz Ahmed Naushad Ahmed Khan as
+designated reserve) didn't credit Impact Player points to users. The
+symptom was visible to users: their team showed lower-than-expected
+scores. The cause was buried.
+
+The investigation went through three layers of "obvious" before landing
+at the real cause:
+
+1. **First guess** — scoring bug. Re-ran the scorer against the feed
+   payload. Same incorrect output.
+2. **Second guess** — feed corruption. Diffed iSportz payloads against
+   prior matches. Feed was clean.
+3. **Real cause** — the resolver was filtering out reserves before they
+   could be activated.
+
+The resolver had a clause that I'd added "defensively" months earlier:
+```sql
+WHERE feed_player_unique_id = $1
+  AND is_playing_xi IS DISTINCT FROM FALSE
+```
+
+The intent was: don't resolve players who haven't been announced for
+this match. The unintended consequence: designated reserves have
+`is_playing_xi = false` by definition (they're not in the announced
+XI), so the resolver returned `null`. With no canonical ID, the
+activation UPDATE matched 0 rows. With no activation, no rescore.
+With no rescore, no points to the user.
+
+The fix was one line:
+
+```sql
+WHERE feed_player_unique_id = $1
+  AND (is_playing_xi IS DISTINCT FROM FALSE OR is_reserve_player = TRUE)
+```
+
+The actual lesson wasn't about the SQL. It was about **defensive code
+that nobody documents the reason for**. The original `is_playing_xi`
+guard was protecting against a real scenario — leftover non-XI rows
+from a prior match's squad polluting the lookup. I'd written the guard,
+shipped it, never linked it to the scenario it was protecting against
+in a comment, and months later didn't remember why it was there.
+
+The post-incident commit message reads:
+
+```
+fix(scoring): include designated reserves in canonical resolver
+
+Resolver was filtering is_playing_xi=FALSE rows out, which meant
+reserves (definitionally not in the announced XI) never resolved.
+With no canonical ID, activation UPDATE matched 0 rows -> reserve
+was never marked impact_activated -> users lost points.
+
+The is_playing_xi guard was added in PR #143 to prevent leftover
+squad rows from a prior match polluting lookups. That problem is now
+solved by per-match indexing, so the guard is redundant. Replaced
+with the simpler "in this match's squad" predicate, with an explicit
+OR for reserves to be future-proof against re-introducing the guard.
+
+Mitigation in production: manually marked the reserve activated via
+admin panel + force-rescored. All affected entries credited.
+```
+
+Production incidents are the only feedback loop that exposes which of
+your invariants weren't really invariants. This one cost an evening; it
+permanently raised my bar for documenting *why* a piece of defensive
+code exists.
+
+<PullQuote attribution="A truth from the incident postmortem">
+  Defensive code without a documented reason becomes the next outage's
+  hiding place.
+</PullQuote>
+
+## What I'd do differently
+
+Two honest retros:
+
+1. **Stand up the DLT-compliant SMS pipeline on day one.** I deferred
+   it because notifications felt low priority next to scoring. DLT
+   template approval takes 1-3 business days end-to-end, and you can't
+   start that clock until you have the exact template body locked. When
+   MCA later wanted "send all users an SMS when XI is announced," the
+   code was a one-day build but the approvals were a one-week wait. The
+   ROI on starting the approval flow on day one is just enormous — the
+   code change is small.
+
+2. **Build the rescore-by-admin tool on day one.** I shipped Force
+   Rescore as an admin endpoint after the S4-M12 incident. It would
+   have saved 90 minutes that night, and three or four more incidents
+   since. Build the "manual override of the automated system" as a
+   first-class feature, not an emergency add.
+
+## Stack & numbers
+
+<StatGrid
+  stats={[
+    { value: "540K+", label: "Platform users", sublabel: "Across MCA's fan platform" },
+    { value: "670", label: "Fantasy players", sublabel: "Engaged dedicated cohort" },
+    { value: "26", label: "Matches scored live", sublabel: "Real-time + replay-safe" },
+    { value: "0", label: "P1 scoring incidents", sublabel: "Post the S4-M12 fix" },
+  ]}
+/>
+
+**Backend:** Fastify · Node.js · TypeScript · PostgreSQL · Redis · BullMQ
+· WebSockets · Zod schemas · iSportz CDN integration · Gupshup SMS
+(DLT-compliant)
+
+**Frontend:** Next.js 16 · React 19 · TailwindCSS · framer-motion
+(consumer web + admin)
+
+**Mobile:** Capacitor + Ionic React (one codebase, web + iOS + Android)
+
+**Auth & security:** JWT (HS256) · rotating refresh tokens with grace
+window · Redis-backed revocation cache · AES-256-GCM PII at rest with
+hash sidecar lookups (DPDP-ready)
+
+**Ops:** Idempotent admin operations · audit log on every privileged
+mutation · masked-PII logging · per-match WebSocket channels
+
+---
+
+If you're building real-time scoring on top of a sports feed, or
+weighing the trade-offs around stateless JWT with revocation, or just
+trying to make sense of how India's DLT and DPDP rules shape backend
+design — feel free to reach out. I'm always up for a conversation about
+production systems built under real constraints.

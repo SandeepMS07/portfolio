@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-label="PII encryption with hash sidecar">
+  <defs>
+    <pattern id="dots-pi" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="0.8" fill="#ffffff10"/>
+    </pattern>
+    <marker id="arr-pi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#ff5e2c"/>
+    </marker>
+  </defs>
+  <rect width="800" height="450" fill="#0a0b0f"/>
+  <rect width="800" height="450" fill="url(#dots-pi)"/>
+
+  <text x="40" y="36" font-family="ui-monospace, monospace" font-size="10" letter-spacing="2.5" fill="#ff5e2c">FIG · 05 // PII AT REST — ENCRYPT + HASH SIDECAR</text>
+
+  <!-- input: plaintext mobile -->
+  <g>
+    <rect x="40" y="80" width="170" height="60" rx="12" fill="#16171e" stroke="#ffffff20"/>
+    <text x="55" y="103" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.5" fill="#ff9347">INPUT</text>
+    <text x="55" y="125" font-family="ui-monospace, monospace" font-size="13" fill="#f4f5f7">9876543210</text>
+  </g>
+
+  <!-- two paths -->
+  <!-- top path: encrypt -->
+  <path d="M 210 100 Q 270 100, 310 100" stroke="#ff5e2c" stroke-width="1.5" fill="none" marker-end="url(#arr-pi)"/>
+  <text x="240" y="92" font-family="ui-monospace, monospace" font-size="9" letter-spacing="1.2" fill="#8c8c97">encrypt</text>
+  <g>
+    <rect x="320" y="78" width="200" height="44" rx="10" fill="#0a0b0f" stroke="#ff5e2c" stroke-width="1.5"/>
+    <text x="420" y="98" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="12" font-weight="700" fill="#f4f5f7">AES-256-GCM</text>
+    <text x="420" y="114" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#ff9347">IV + ciphertext + tag</text>
+  </g>
+  <path d="M 520 100 L 590 100" stroke="#ff5e2c" stroke-width="1.5" fill="none" marker-end="url(#arr-pi)"/>
+  <g>
+    <rect x="600" y="78" width="160" height="44" rx="10" fill="#16171e" stroke="#ffffff20"/>
+    <text x="615" y="97" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.5" fill="#ff9347">mobile_enc</text>
+    <text x="615" y="113" font-family="ui-monospace, monospace" font-size="10" fill="#8c8c97">BYTEA · decryptable</text>
+  </g>
+
+  <!-- bottom path: hash -->
+  <path d="M 210 130 Q 270 195, 310 200" stroke="#ff5e2c" stroke-width="1.5" fill="none" marker-end="url(#arr-pi)"/>
+  <text x="218" y="180" font-family="ui-monospace, monospace" font-size="9" letter-spacing="1.2" fill="#8c8c97">hash + pepper</text>
+  <g>
+    <rect x="320" y="178" width="200" height="44" rx="10" fill="#0a0b0f" stroke="#ff5e2c" stroke-width="1.5"/>
+    <text x="420" y="198" text-anchor="middle" font-family="ui-sans-serif, system-ui" font-size="12" font-weight="700" fill="#f4f5f7">SHA-256(value || pepper)</text>
+    <text x="420" y="214" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" fill="#ff9347">deterministic · indexable</text>
+  </g>
+  <path d="M 520 200 L 590 200" stroke="#ff5e2c" stroke-width="1.5" fill="none" marker-end="url(#arr-pi)"/>
+  <g>
+    <rect x="600" y="178" width="160" height="44" rx="10" fill="#16171e" stroke="#ffffff20"/>
+    <text x="615" y="197" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.5" fill="#ff9347">mobile_hash</text>
+    <text x="615" y="213" font-family="ui-monospace, monospace" font-size="10" fill="#8c8c97">TEXT · UNIQUE index</text>
+  </g>
+
+  <!-- two use cases at the bottom -->
+  <g font-family="ui-sans-serif, system-ui" fill="#f4f5f7">
+    <rect x="40" y="280" width="340" height="120" rx="12" fill="#16171e" stroke="#ffffff20"/>
+    <text x="55" y="304" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.5" fill="#ff9347">LOGIN — USE THE HASH</text>
+    <text x="55" y="328" font-size="12" fill="#bcbcc6">1. normalise incoming mobile</text>
+    <text x="55" y="346" font-size="12" fill="#bcbcc6">2. SHA-256 with pepper</text>
+    <text x="55" y="364" font-size="12" fill="#bcbcc6">3. SELECT … WHERE mobile_hash = $1</text>
+    <text x="55" y="386" font-size="11" fill="#8c8c97" font-style="italic">O(1) index lookup — no decryption</text>
+  </g>
+
+  <g font-family="ui-sans-serif, system-ui" fill="#f4f5f7">
+    <rect x="410" y="280" width="350" height="120" rx="12" fill="#16171e" stroke="#ffffff20"/>
+    <text x="425" y="304" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.5" fill="#ff9347">ADMIN VIEW — DECRYPT GATED</text>
+    <text x="425" y="328" font-size="12" fill="#bcbcc6">1. RBAC + audit log first</text>
+    <text x="425" y="346" font-size="12" fill="#bcbcc6">2. SELECT mobile_enc</text>
+    <text x="425" y="364" font-size="12" fill="#bcbcc6">3. AES-256-GCM decrypt in-process</text>
+    <text x="425" y="386" font-size="11" fill="#8c8c97" font-style="italic">key in env / KMS — never on disk</text>
+  </g>
+
+  <text x="400" y="430" text-anchor="middle" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.5" fill="#8c8c97">hash for lookup · encrypt for display · pepper defeats rainbow tables</text>
+</svg>
