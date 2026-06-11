@@ -502,7 +502,7 @@ export default function Chatbot({
       ref={panelRef}
       className={`glass pointer-events-auto relative flex flex-col overflow-hidden rounded-3xl shadow-[0_30px_90px_-25px_rgba(0,0,0,0.85)] ${
         isPage
-          ? "h-[68vh] min-h-[440px] w-full max-h-[calc(100dvh-210px)] sm:h-[82vh] sm:max-h-[calc(100vh-150px)]"
+          ? "h-[calc(100dvh-12.5rem)] min-h-[460px] w-full sm:h-[82vh] sm:max-h-[calc(100vh-150px)]"
           : "h-[60vh] w-[calc(100vw-2rem)] max-w-[440px]"
       }`}
     >
@@ -539,7 +539,7 @@ export default function Chatbot({
           {showSuggestions ? (
             isPage ? (
               /* immersive centered welcome */
-              <div className="flex flex-1 flex-col items-center justify-center gap-7 py-8 text-center">
+              <div className="flex flex-1 flex-col items-center justify-center gap-5 py-4 text-center sm:gap-7 sm:py-8">
                 <div className="relative">
                   <span
                     aria-hidden
@@ -561,7 +561,8 @@ export default function Chatbot({
                   </p>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-2.5">
+                {/* desktop: centered pill chips */}
+                <div className="hidden flex-wrap justify-center gap-2.5 sm:flex">
                   {promptChips.map((chip) => (
                     <button
                       key={chip.label}
@@ -571,6 +572,25 @@ export default function Chatbot({
                     >
                       <Sparkles className="h-3.5 w-3.5 text-accent" />
                       {chip.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* mobile: 2×2 quick-action tiles */}
+                <div className="grid w-full grid-cols-2 gap-2.5 sm:hidden">
+                  {promptChips.map((chip) => (
+                    <button
+                      key={chip.label}
+                      type="button"
+                      onClick={() => sendMessage(undefined, chip.value)}
+                      className="group glass card-glow flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-left"
+                    >
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[linear-gradient(135deg,rgba(255,94,44,0.28),rgba(255,94,44,0.06))] text-accent ring-1 ring-accent/25">
+                        <Sparkles className="h-4 w-4" />
+                      </span>
+                      <span className="text-[0.8125rem] font-semibold leading-tight text-fg">
+                        {chip.label}
+                      </span>
                     </button>
                   ))}
                 </div>

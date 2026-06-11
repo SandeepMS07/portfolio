@@ -26,7 +26,7 @@ export function ProjectCard({ project, index = 0, wide = false }: ProjectCardPro
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.97 }}
       transition={{ duration: 0.4, ease, layout: { duration: 0.45, ease } }}
-      className={`glass card-glow group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] p-6 sm:p-7 ${
+      className={`glass card-glow group relative flex h-full flex-col overflow-hidden rounded-3xl p-5 sm:rounded-[1.75rem] sm:p-7 ${
         wide ? "sm:col-span-2" : ""
       }`}
     >
@@ -63,7 +63,7 @@ export function ProjectCard({ project, index = 0, wide = false }: ProjectCardPro
         >
           <span
             className={`font-poster leading-[0.85] text-aurora ${
-              wide ? "text-6xl sm:text-7xl" : "text-5xl"
+              wide ? "text-5xl sm:text-7xl" : "text-4xl sm:text-5xl"
             }`}
           >
             {num}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion, type Variants } from "framer-motion";
 import {
   Server,
@@ -10,6 +11,7 @@ import {
   Container,
   Scale,
   Plug,
+  ChevronDown,
   type LucideIcon,
 } from "lucide-react";
 import { skills } from "@/lib/data";
@@ -182,12 +184,12 @@ function CategoryCard({ group, index }: { group: Group; index: number }) {
   return (
     <motion.div
       variants={panelReveal}
-      className="glass glass-sheen card-glow relative flex flex-col overflow-hidden rounded-[1.75rem] p-7 sm:p-8"
+      className="glass glass-sheen card-glow relative flex flex-col overflow-hidden rounded-3xl p-5 sm:rounded-[1.75rem] sm:p-8"
     >
       {/* poster index watermark */}
       <span
         aria-hidden
-        className="pointer-events-none absolute -top-3 right-4 font-poster text-7xl leading-none text-fg/[0.05]"
+        className="pointer-events-none absolute -top-2 right-4 font-poster text-6xl leading-none text-fg/[0.05] sm:-top-3 sm:text-7xl"
       >
         {String(index + 1).padStart(2, "0")}
       </span>
@@ -260,6 +262,105 @@ function Legend() {
   );
 }
 
+// Per-category accent colors — give each accordion row its own identity.
+const categoryColors = [
+  "#ff7a45", // Backend & APIs — orange
+  "#5fa5ff", // Frontend & Web — blue
+  "#a778ff", // AI & Voice — violet
+  "#3ddc97", // Auth & Security — emerald
+  "#f5b54a", // Compliance — amber
+  "#5fdfff", // Integrations — teal
+  "#ff6f91", // Mobile — pink
+  "#8b9bff", // DevOps & Infra — indigo
+];
+
+// Mobile: collapsible accordion — tap a category to reveal its tools.
+function MobileAccordion({ groups }: { groups: Group[] }) {
+  const [openIndex, setOpenIndex] = useState(0);
+
+  return (
+    <div className="space-y-2.5 sm:hidden">
+      {groups.map((group, i) => {
+        const { icon: Icon } = group;
+        const isOpen = openIndex === i;
+        const color = categoryColors[i % categoryColors.length];
+        const bars = [...group.bars].sort(
+          (a, b) => levelRank[a.level] - levelRank[b.level],
+        );
+        return (
+          <div
+            key={group.title}
+            className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-colors duration-300"
+            style={
+              isOpen
+                ? {
+                    borderColor: `${color}55`,
+                    background: `linear-gradient(180deg, ${color}14, rgba(255,255,255,0.02))`,
+                  }
+                : undefined
+            }
+          >
+            <button
+              type="button"
+              onClick={() => setOpenIndex(isOpen ? -1 : i)}
+              aria-expanded={isOpen}
+              className="flex w-full items-center gap-3.5 p-4 text-left"
+            >
+              <span
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                style={{
+                  background: `linear-gradient(135deg, ${color}33, ${color}0d)`,
+                  color,
+                  boxShadow: `inset 0 0 0 1px ${color}40`,
+                }}
+              >
+                <Icon className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h3 className="text-base font-semibold tracking-tight text-fg">
+                  {group.title}
+                </h3>
+                <p
+                  className="font-mono text-[0.625rem] font-medium uppercase tracking-wider"
+                  style={{ color: `${color}cc` }}
+                >
+                  {group.bars.length} tools
+                </p>
+              </div>
+              <span
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-all duration-300"
+                style={{
+                  background: isOpen ? `${color}22` : "rgba(255,255,255,0.05)",
+                  color: isOpen ? color : "var(--color-fg-dim, #9ca3af)",
+                }}
+              >
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform duration-300 ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </span>
+            </button>
+            <div
+              className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+                isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+              }`}
+            >
+              <div className="overflow-hidden">
+                <div className="flex flex-wrap gap-2 px-4 pb-4 pt-1">
+                  {bars.map((bar) => (
+                    <Chip key={bar.name} name={bar.name} level={bar.level} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 export function SkillProficiency() {
   const extras = skills.find((c) => c.title === extraTitle)?.items ?? [];
 
@@ -272,19 +373,23 @@ export function SkillProficiency() {
     <div className="space-y-8">
       <Marquee items={allTools} />
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <p className="text-sm text-fg-dim">
           Curated highlights per domain — proficiency at a glance.
         </p>
         <Legend />
       </div>
 
+      {/* mobile: accordion */}
+      <MobileAccordion groups={groups} />
+
+      {/* desktop: card grid */}
       <motion.div
         variants={panelStagger}
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, margin: "-80px" }}
-        className="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        className="hidden items-start gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3"
       >
         {groups.map((group, i) => (
           <CategoryCard key={group.title} group={group} index={i} />
@@ -298,7 +403,7 @@ export function SkillProficiency() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.6, ease }}
-          className="rounded-[1.75rem] border border-line p-7 sm:p-8"
+          className="rounded-3xl border border-line p-5 sm:rounded-[1.75rem] sm:p-8"
         >
           <p className="font-mono text-[0.6875rem] uppercase tracking-wider text-fg-faint">
             {extraTitle}

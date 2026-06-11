@@ -64,7 +64,7 @@ export function ProjectsFilter() {
           </motion.span>
         </div>
 
-        <div className="glass flex flex-wrap gap-1 rounded-full p-1">
+        <div className="glass no-scrollbar flex max-w-full gap-1 overflow-x-auto rounded-full p-1">
           {projectFilters.map((item) => {
             const active = filter === item;
             return (
@@ -72,7 +72,7 @@ export function ProjectsFilter() {
                 key={item}
                 onClick={() => setFilter(item)}
                 type="button"
-                className={`relative rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors duration-300 ${
+                className={`relative shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors duration-300 ${
                   active ? "text-white" : "text-fg-dim hover:text-fg"
                 }`}
               >

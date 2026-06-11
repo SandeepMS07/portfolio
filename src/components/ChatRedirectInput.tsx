@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useRef, FormEvent, KeyboardEvent, useEffect } from "react";
 import { Sparkles, ArrowUp } from "lucide-react";
@@ -17,6 +18,9 @@ export function ChatRedirectInput({
   const redirectedRef = useRef(false);
   const isFloating = variant === "floating";
   const hideOnChat = pathname?.startsWith("/chat");
+  // Hide the floating assistant where it would collide / is redundant.
+  const hideFloating =
+    hideOnChat || pathname?.startsWith("/contact");
 
   const handleSubmit = (
     event?: FormEvent | KeyboardEvent<HTMLInputElement>,
@@ -36,24 +40,46 @@ export function ChatRedirectInput({
     redirectedRef.current = false;
   }, [pathname, hideOnChat]);
 
-  if (hideOnChat) {
+  if (hideFloating) {
     return null;
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className={
-        isFloating
-          ? "fixed bottom-5 right-5 z-40 hidden w-[320px] max-w-[calc(100vw-2.5rem)] flex-col items-end sm:flex"
-          : "w-full max-w-xl"
-      }
-      style={
-        isFloating
-          ? { bottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)" }
-          : undefined
-      }
-    >
+    <>
+      {/* mobile: compact floating action button above the tab bar */}
+      {isFloating ? (
+        <Link
+          href="/chat"
+          aria-label="Open AI assistant"
+          className="animate-float group fixed right-4 bottom-[calc(env(safe-area-inset-bottom,0px)+5.75rem)] z-40 flex h-14 w-14 items-center justify-center rounded-full bg-accent text-night shadow-[0_12px_34px_-10px_rgba(255,94,44,0.7)] ring-1 ring-white/20 transition-transform active:scale-90 sm:hidden"
+        >
+          {/* breathing glow ring */}
+          <span
+            aria-hidden
+            className="absolute inset-0 animate-ping rounded-full bg-accent/40 [animation-duration:2.5s]"
+          />
+          {/* notification dot */}
+          <span className="absolute -right-0.5 -top-0.5 flex h-3 w-3">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/70" />
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-accent ring-2 ring-[#0b0b0d]" />
+          </span>
+          <Sparkles className="relative h-6 w-6 transition-transform duration-500 group-hover:rotate-12 group-active:scale-110" />
+        </Link>
+      ) : null}
+
+      <form
+        onSubmit={handleSubmit}
+        className={
+          isFloating
+            ? "fixed bottom-5 right-5 z-40 hidden w-[320px] max-w-[calc(100vw-2.5rem)] flex-col items-end sm:flex"
+            : "w-full max-w-xl"
+        }
+        style={
+          isFloating
+            ? { bottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)" }
+            : undefined
+        }
+      >
       {/* badge */}
       <div className="mb-2 mr-1 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 shadow-sm ring-1 ring-white/15 backdrop-blur">
         <span className="relative flex h-2 w-2 items-center justify-center">
@@ -98,6 +124,7 @@ export function ChatRedirectInput({
           </div>
         </div>
       </div>
-    </form>
+      </form>
+    </>
   );
 }
