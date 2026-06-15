@@ -53,13 +53,12 @@ export const projects: Project[] = [
   },
   {
     title: "Cloudverse",
-    role: "FinOps Engineer (Chargeback & Unit Economics)",
+    role: "FinOps Engineer (Chargeback)",
     description:
-      "Built FinOps modules for chargeback and unit economics to enable cloud cost attribution, real-time analytics, and profitability insights across teams.",
+      "Built FinOps modules for chargeback to enable cloud cost attribution, real-time analytics, and profitability insights across teams.",
     tags: [
       "FinOps",
       "Chargeback",
-      "Unit Economics",
       "NestJS",
       "GraphQL",
       "ClickHouse",
@@ -88,6 +87,33 @@ export const projects: Project[] = [
       "Central auth and licensing fabric with multi-realm SSO, Razorpay billing, ECDSA licensing, and RBAC controls.",
     tags: ["SaaS/Auth", "SSO", "RBAC", "Billing"],
     links: [{ label: "Website", href: "https://auraml.com/" }],
+    highlight: true,
+  },
+  {
+    title: "MyFLAME — Salesforce Student Portal Mobile App",
+    role: "Mobile / Full-Stack Engineer",
+    description:
+      "White-label React Native app for FLAME University that wraps a Salesforce Experience Cloud (LWR) community in a native shell — OAuth 2.0 + PKCE, Google SSO, secure token storage, and frontdoor.jsp session bridging. Templatized so a new university client is a config-driven rebrand (~2–4 days), not a ground-up build.",
+    tags: [
+      "Mobile",
+      "React Native",
+      "Salesforce",
+      "SaaS/Auth",
+      "OAuth",
+      "TypeScript",
+      "iOS",
+      "Android",
+    ],
+    links: [
+      {
+        label: "iOS",
+        href: "https://apps.apple.com/in/app/myflame/id1587700223",
+      },
+      {
+        label: "Android",
+        href: "https://play.google.com/store/apps/details?id=com.myflame&hl=en_IN",
+      },
+    ],
     highlight: true,
   },
   {
@@ -231,6 +257,25 @@ export const projects: Project[] = [
       "Connected portals for scouts, alumni, and startups with role-aware dashboards and workflows.",
     tags: ["SaaS/Auth", "RBAC", "Next.js"],
     links: [{ label: "Website", href: "https://scoutbyts.com/" }],
+  },
+  {
+    title: "PB Manager — Grain-Trading ERP (MB Groups)",
+    role: "Sole Developer",
+    description:
+      "Full-stack ERP that digitizes a grain-trading firm end-to-end — purchases, transport consignments (bilty), sales, billing, company-branded invoices, expenses, and payment tracking — replacing manual Excel bookkeeping. Idempotent bill generation, concurrency-safe per-company invoice numbering via atomic Postgres functions, allocation-based payments, JWT/RBAC auth, and Excel import/export.",
+    tags: [
+      "ERP",
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Supabase",
+      "PostgreSQL",
+      "Zod",
+      "JWT",
+      "SaaS/Auth",
+    ],
+    links: [{ label: "Website", href: "https://www.mbgroups.online/" }],
+    highlight: true,
   },
 ];
 

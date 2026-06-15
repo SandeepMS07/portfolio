@@ -93,7 +93,7 @@ export function ProjectsFilter() {
       {/* bento grid — featured spans wide, dense packing fills gaps */}
       <motion.div
         layout
-        className="grid grid-flow-dense grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        className="grid grid-flow-dense grid-cols-1 items-start gap-4 sm:grid-cols-2 lg:grid-cols-3"
       >
         <AnimatePresence mode="popLayout">
           {filtered.map((project, index) => (

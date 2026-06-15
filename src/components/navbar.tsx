@@ -41,7 +41,7 @@ export function Navbar() {
                 priority
               />
             </span>
-            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-white ring-2 ring-[#0b0b0d]" />
+            <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-[#0b0b0d]" />
           </span>
           <span className="text-sm font-semibold text-white">
             {heroProfile.name}

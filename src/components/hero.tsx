@@ -41,8 +41,8 @@ export function Hero() {
         </div>
         <span className="absolute -bottom-3 left-1/2 inline-flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-white/10 px-3 py-1 text-[0.6875rem] font-medium text-fg ring-1 ring-white/15 backdrop-blur">
           <span className="relative flex h-1.5 w-1.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white/60 opacity-70" />
-            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-white" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/60 opacity-70" />
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
           </span>
           Available for work
         </span>

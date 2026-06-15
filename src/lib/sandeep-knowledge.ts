@@ -80,8 +80,8 @@ FLAGSHIP PROJECTS
    - Instant, white-labeled bot demo instances with zero DevOps.
    - Lets GTM/sales teams spin up tailored AI demos in seconds. Stack: Next.js, automation.
 
-3) Cloudverse — FinOps Platform (Chargeback & Unit Economics)  (Role: FinOps Engineer) — FLAGSHIP
-   - Built chargeback and unit-economics modules for cloud cost attribution, real-time analytics, and profitability insights across teams.
+3) Cloudverse — FinOps Platform (Chargeback)  (Role: FinOps Engineer) — FLAGSHIP
+   - Built chargeback modules for cloud cost attribution, real-time analytics, and profitability insights across teams.
    - Stack: NestJS, GraphQL, ClickHouse, PostgreSQL, Prisma, Next.js, Ant Design, multi-tenant.
 
 4) MCA Fantasy League — Real-Time T20 Cricket Fantasy Platform  (Role: System Architect & Lead Engineer) — FLAGSHIP, HIGHEST IMPACT
@@ -117,6 +117,11 @@ FLAGSHIP PROJECTS
 
 13) Scout by TS / Alumni Portal / Startup Portal  (Role: Full Stack)
    - Connected platforms with role-aware dashboards, workflows, and secure APIs.
+
+14) PB Manager — Grain-Trading ERP (MB Groups / MB Traders)  (Role: Sole Developer)
+   - Full-stack ERP that digitizes a grain/maize-trading business end-to-end: purchases, transport consignments (bilty), sales, billing, company-branded invoices, expenses, and payment tracking — replacing manual Excel bookkeeping.
+   - Idempotent bill generation, concurrency-safe per-company invoice numbering (atomic Postgres functions), allocation-based payments (one payment split across many records), JWT/RBAC auth, Excel import/export, and Indian financial-year (Apr–Mar) aware dashboards.
+   - Stack: Next.js 16, React 19, TypeScript, Supabase (PostgreSQL), Zod, React Hook Form, Tailwind v4, shadcn/ui, TanStack Table, jose (JWT), bcrypt, SheetJS, Vitest. Live: https://www.mbgroups.online/
 
 =====================
 EXPERIENCE TIMELINE
