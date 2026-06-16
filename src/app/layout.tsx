@@ -5,10 +5,11 @@ import { Navbar } from "@/components/navbar";
 import { MobileTabBar } from "@/components/mobile-tab-bar";
 import { Footer } from "@/components/footer";
 import { ChatRedirectInput } from "@/components/ChatRedirectInput";
-import { VisitTracker } from "@/components/visit-tracker";
 import { AuroraBackground } from "@/components/aurora-background";
 import { LiquidGlassFilter } from "@/components/liquid-glass-filter";
-import { Analytics } from "@vercel/analytics/react";
+import { GoogleAnalytics } from "@next/third-parties/google";
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 const display = Sora({
   variable: "--font-sora",
@@ -67,9 +68,8 @@ export default function RootLayout({
         </div>
         <ChatRedirectInput />
         <MobileTabBar />
-        <VisitTracker />
-        <Analytics />
       </body>
+      {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
     </html>
   );
 }
