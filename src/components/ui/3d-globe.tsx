@@ -282,10 +282,10 @@ function RotatingGlobe({
       const bump = arr[1];
       if (earth) {
         earth.colorSpace = THREE.SRGBColorSpace;
-        earth.anisotropy = 16;
+        earth.anisotropy = 4;
       }
       if (bump) {
-        bump.anisotropy = 8;
+        bump.anisotropy = 2;
       }
     },
   );
@@ -536,7 +536,7 @@ export function Globe3D({
           alpha: true,
           powerPreference: "high-performance",
         }}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         camera={{
           fov: 45,
           near: 0.1,

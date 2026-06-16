@@ -2,10 +2,17 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useIsDesktop } from "@/lib/use-media-query";
 
 export const BoxesCore = ({ className, ...rest }: { className?: string }) => {
-  const rows = new Array(100).fill(1);
-  const cols = new Array(60).fill(1);
+  const isDesktop = useIsDesktop();
+
+  // The hover-driven grid is decorative and pointer-only — skip the
+  // thousands of motion nodes entirely on touch/mobile.
+  if (!isDesktop) return null;
+
+  const rows = new Array(48).fill(1);
+  const cols = new Array(28).fill(1);
   const colors = [
     "#93c5fd",
     "#f9a8d4",
