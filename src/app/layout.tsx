@@ -55,7 +55,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${display.variable} ${body.variable} ${mono.variable} ${poster.variable} min-h-screen bg-night text-fg antialiased`}
+        className={`${display.variable} ${body.variable} ${mono.variable} ${poster.variable} min-h-screen overflow-x-hidden bg-night text-fg antialiased`}
       >
         <AuroraBackground />
         <LiquidGlassFilter />

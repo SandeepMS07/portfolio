@@ -21,7 +21,7 @@ export default function Home() {
 
       {/* statement + 3D globe */}
       <section className="grid items-center gap-4 sm:gap-6 lg:grid-cols-2 lg:gap-12">
-        <div className="relative order-2 h-[360px] sm:h-[480px] lg:order-1">
+        <div className="relative order-2 h-[360px] overflow-hidden sm:h-[480px] lg:order-1">
           <Globe3DDemo />
         </div>
         <p className="order-1 text-2xl font-medium leading-snug tracking-tight text-fg sm:text-4xl lg:order-2">

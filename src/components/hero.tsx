@@ -88,7 +88,7 @@ export function Hero() {
       >
         <Link
           href={heroContent.ctaProjects}
-          className="btn-shine group relative inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-[#17120e] px-5 py-3.5 text-sm font-semibold text-white shadow-[0_0_44px_-10px_rgba(255,94,44,0.5)] ring-1 ring-white/12 transition-all duration-300 hover:ring-accent/40 sm:flex-none sm:px-7"
+          className="btn-shine group relative inline-flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#17120e] px-4 py-3.5 text-sm font-semibold text-white shadow-[0_0_44px_-10px_rgba(255,94,44,0.5)] ring-1 ring-white/12 transition-all duration-300 hover:ring-accent/40 sm:flex-none sm:px-7"
         >
           View Projects
           <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
@@ -98,7 +98,7 @@ export function Hero() {
           download
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-full px-5 py-3.5 text-sm font-semibold text-fg ring-1 ring-white/15 transition-colors duration-300 hover:bg-white/8 sm:flex-none sm:px-7"
+          className="inline-flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-3.5 text-sm font-semibold text-fg ring-1 ring-white/15 transition-colors duration-300 hover:bg-white/8 sm:flex-none sm:px-7"
         >
           Download Résumé
           <Download className="h-4 w-4" />
