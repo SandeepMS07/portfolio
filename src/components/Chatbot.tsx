@@ -588,23 +588,23 @@ export default function Chatbot({
           {showSuggestions ? (
             isPage ? (
               /* immersive centered welcome */
-              <div className="flex flex-1 flex-col items-center justify-center gap-5 py-4 text-center sm:gap-7 sm:py-8">
+              <div className="flex flex-1 flex-col items-center justify-start gap-4 py-3 text-center sm:justify-center sm:gap-7 sm:py-8">
                 <div className="relative">
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute left-1/2 top-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,94,44,0.5),transparent_70%)] blur-2xl"
+                    className="pointer-events-none absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,94,44,0.5),transparent_70%)] blur-2xl sm:h-32 sm:w-32"
                   />
-                  <div className="animate-float relative flex h-16 w-16 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(255,94,44,0.28),rgba(255,71,51,0.08))] text-accent ring-1 ring-accent/30">
-                    <Sparkles className="h-7 w-7" />
+                  <div className="animate-float relative flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,rgba(255,94,44,0.28),rgba(255,71,51,0.08))] text-accent ring-1 ring-accent/30 sm:h-16 sm:w-16">
+                    <Sparkles className="h-6 w-6 sm:h-7 sm:w-7" />
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   <span className="eyebrow">Portfolio Assistant</span>
-                  <h2 className="font-poster text-4xl leading-[0.95] tracking-tight text-fg sm:text-5xl">
+                  <h2 className="font-poster text-3xl leading-[0.95] tracking-tight text-fg sm:text-5xl">
                     How can I <span className="text-aurora">help?</span>
                   </h2>
-                  <p className="mx-auto max-w-md text-sm leading-relaxed text-fg-dim">
+                  <p className="mx-auto max-w-md text-[0.8125rem] leading-relaxed text-fg-dim sm:text-sm">
                     Ask about Sandeep&apos;s skills, projects, and experience —
                     in plain English. Tap a topic or type your own question.
                   </p>
