@@ -229,9 +229,12 @@ export function PlaygroundCarousel({ projects }: { projects: Project[] }) {
     if (!el) return;
     el.addEventListener("scroll", updateEdges, { passive: true });
     window.addEventListener("resize", updateEdges);
+    const blockWheel = (e: WheelEvent) => e.preventDefault();
+    el.addEventListener("wheel", blockWheel, { passive: false });
     return () => {
       el.removeEventListener("scroll", updateEdges);
       window.removeEventListener("resize", updateEdges);
+      el.removeEventListener("wheel", blockWheel);
     };
   }, [updateEdges]);
 
