@@ -603,4 +603,12 @@ export const recommendations: Recommendation[] = [
     quote:
       "I had the pleasure of working with Sandeep on NativeBridge, where he consistently proved to be a strong and dependable engineer. He has a solid grasp of fundamentals, writes clean and thoughtful code, and takes ownership of the problems he works on. Beyond technical skills, he is proactive, collaborative, and easy to work with. I’d happily recommend Sandeep to any team looking for a reliable and capable engineer.",
   },
+  {
+    name: "Gowtham Kumar B V",
+    title: "Software Development Consultant at Deloitte",
+    relation: "Senior to Sandeep · June 2026",
+    avatar: "/gowthamkumar.jpeg",
+    quote:
+      "I had the chance to work with Sandeep during his time at LearnCab, where he was part of the team building learner-facing web applications. He brought a strong sense of ownership to his work, consistently focused on improving performance, reliability, and the overall user experience for learners using the platform. Sandeep is the kind of engineer who digs into problems rather than settling for surface-level fixes. He wrote clean, maintainable code, picked up context quickly, and was always willing to help out wherever the team needed him. Even early in his career, he showed the kind of initiative and technical curiosity that’s hard to teach. I’d happily recommend him for any role that needs a dependable, full stack engineer who genuinely cares about the product he’s building.",
+  },
 ];
