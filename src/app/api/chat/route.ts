@@ -168,7 +168,7 @@ export async function POST(request: Request) {
 
     // Gemini Chat Model
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.6-flash",
       systemInstruction: {
         role: "system",
         parts: [{ text: SYSTEM_PROMPT }],
