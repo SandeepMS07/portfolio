@@ -33,7 +33,7 @@ WHY HE STANDS OUT
 CORE SKILLS & TECH STACK
 =====================
 Backend & APIs (Expert):
-- Python, FastAPI (primary), Node.js, Fastify, NestJS, Express, Django
+- Python, FastAPI (primary), Node.js, Fastify, NestJS, Express, Django, Java (Spring Boot)
 - REST, GraphQL, WebSockets / Socket.IO, microservices, system design
 - PostgreSQL, MongoDB, MySQL, Redis, ClickHouse, Prisma, SQLAlchemy
 - BullMQ (queues), caching, idempotency patterns, event-driven design
@@ -122,6 +122,12 @@ FLAGSHIP PROJECTS
    - Full-stack ERP that digitizes a grain/maize-trading business end-to-end: purchases, transport consignments (bilty), sales, billing, company-branded invoices, expenses, and payment tracking — replacing manual Excel bookkeeping.
    - Idempotent bill generation, concurrency-safe per-company invoice numbering (atomic Postgres functions), allocation-based payments (one payment split across many records), JWT/RBAC auth, Excel import/export, and Indian financial-year (Apr–Mar) aware dashboards.
    - Stack: Next.js 16, React 19, TypeScript, Supabase (PostgreSQL), Zod, React Hook Form, Tailwind v4, shadcn/ui, TanStack Table, jose (JWT), bcrypt, SheetJS, Vitest. Live: https://www.mbgroups.online/
+
+15) Optimile Fleet — Fleet compliance, maintenance & cost module of a logistics SaaS (Optimile)  (Role: Fleet Module Owner, Full-Stack)
+   - Keeps a transport company's trucks and drivers dispatch-ready: expired or missing compliance documents (insurance, fitness, permits, licences) block dispatch; garage/preventive-maintenance work orders with ops → inspection → finance sign-off; tyre lifecycle and cost-per-km; parts inventory with approvals; an ops Exception Center; and whole-fleet onboarding from one Excel workbook auto-filled from VAHAN/SARTHI.
+   - Took over and built out the module (Jul–Oct 2026) in a ~20-person team: #1 contributor on both fleet-service (77% of commits) and fleet-web (84%), plus RBAC work in admin-service.
+   - Engineering highlights: optimistic-lock retry in fresh transactions (clean 409 instead of 500s), a single compliance rule shared by the dispatch gate and nightly sweep, single-writer vehicle status with an hourly self-healing reconcile, ShedLock for multi-instance scheduled jobs, server-side segregation of duties and maker-checker on money approvals, interval-union utilisation maths, and transactional outbox/inbox events to booking/finance/notification services.
+   - Stack: Java 21, Spring Boot 3.3, Spring Security (OAuth2/JWT), Hibernate/JPA, PostgreSQL, ShedLock, Resilience4j, Apache POI, Google Cloud Storage, React 19, TypeScript, Vite, Tailwind, TanStack Query, Zustand, JUnit 5, Vitest, Playwright, Docker, Nginx. Live: https://optimile.co
 
 =====================
 EXPERIENCE TIMELINE

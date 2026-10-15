@@ -40,6 +40,33 @@ function matchesFilter(
   return true;
 }
 
+// Mirrors CSS `grid-flow-dense` on the 3-column layout to find featured
+// (2-col) cards whose row is left with an empty cell, so they can span full width.
+function findUnpairedWide(items: Project[]) {
+  const rows: boolean[][] = [];
+  const wideRows = new Map<number, number>();
+
+  items.forEach((project, i) => {
+    const span = project.highlight ? 2 : 1;
+    for (let r = 0; ; r++) {
+      rows[r] ??= [false, false, false];
+      const c = [0, 1, 2]
+        .slice(0, 4 - span)
+        .find((col) => rows[r].slice(col, col + span).every((cell) => !cell));
+      if (c === undefined) continue;
+      for (let k = c; k < c + span; k++) rows[r][k] = true;
+      if (span === 2) wideRows.set(i, r);
+      return;
+    }
+  });
+
+  const unpaired = new Set<number>();
+  wideRows.forEach((r, i) => {
+    if (rows[r].some((cell) => !cell)) unpaired.add(i);
+  });
+  return unpaired;
+}
+
 export function ProjectsFilter() {
   const [filter, setFilter] = useState<(typeof projectFilters)[number]>("All");
 
@@ -47,6 +74,7 @@ export function ProjectsFilter() {
     () => projects.filter((project) => matchesFilter(project, filter)),
     [filter],
   );
+  const fullWidth = useMemo(() => findUnpairedWide(filtered), [filtered]);
 
   return (
     <div className="space-y-8">
@@ -102,6 +130,7 @@ export function ProjectsFilter() {
               project={project}
               index={index}
               wide={Boolean(project.highlight)}
+              full={fullWidth.has(index)}
             />
           ))}
         </AnimatePresence>

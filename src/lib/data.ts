@@ -259,6 +259,23 @@ export const projects: Project[] = [
     links: [{ label: "Website", href: "https://scoutbyts.com/" }],
   },
   {
+    title: "Optimile Fleet — Fleet Compliance, Maintenance & Cost Platform",
+    role: "Fleet Module Owner (Full-Stack)",
+    description:
+      "Owned the fleet module of a multi-tenant logistics SaaS — compliance-gated dispatch, garage and preventive-maintenance work orders, tyre lifecycle and cost-per-km, parts inventory with approvals, an ops Exception Center, and whole-fleet Excel onboarding auto-filled from India's VAHAN/SARTHI registries. Optimistic-lock retries, single-writer vehicle status with hourly self-healing reconcile, ShedLock for multi-instance jobs, and server-side segregation of duties on money approvals.",
+    tags: [
+      "Logistics SaaS",
+      "Java 21",
+      "Spring Boot",
+      "React",
+      "TypeScript",
+      "PostgreSQL",
+      "RBAC",
+    ],
+    links: [{ label: "Website", href: "https://optimile.co" }],
+    highlight: true,
+  },
+  {
     title: "PB Manager — Grain-Trading ERP (MB Groups)",
     role: "Sole Developer",
     description:
@@ -275,7 +292,6 @@ export const projects: Project[] = [
       "SaaS/Auth",
     ],
     links: [{ label: "Website", href: "https://www.mbgroups.online/" }],
-    highlight: true,
   },
 ];
 

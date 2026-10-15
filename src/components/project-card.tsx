@@ -11,9 +11,16 @@ type ProjectCardProps = {
   project: Project;
   index?: number;
   wide?: boolean;
+  /** Span all 3 columns on lg — for a wide card with no narrow card beside it. */
+  full?: boolean;
 };
 
-export function ProjectCard({ project, index = 0, wide = false }: ProjectCardProps) {
+export function ProjectCard({
+  project,
+  index = 0,
+  wide = false,
+  full = false,
+}: ProjectCardProps) {
   const num = String(index + 1).padStart(2, "0");
   const primaryTag = project.tags[0];
   const visibleTags = project.tags.slice(1, wide ? 7 : 4);
@@ -28,7 +35,7 @@ export function ProjectCard({ project, index = 0, wide = false }: ProjectCardPro
       transition={{ duration: 0.4, ease, layout: { duration: 0.45, ease } }}
       className={`glass card-glow group relative flex h-full flex-col overflow-hidden rounded-3xl p-5 sm:rounded-[1.75rem] sm:p-7 ${
         wide ? "sm:col-span-2" : ""
-      }`}
+      } ${full ? "lg:col-span-3" : ""}`}
     >
       {/* featured gradient top accent */}
       {project.highlight && (
