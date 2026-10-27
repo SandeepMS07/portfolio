@@ -36,14 +36,37 @@ const poster = Anton({
   display: "swap",
 });
 
+const SITE_TITLE = "Sandeep M S — AI Engineer & Full Stack Developer";
+const SITE_DESCRIPTION =
+  "Portfolio for Sandeep M S — AI Engineer building LLM & voice agents, AI chat platforms, and multi-tenant SaaS, plus full stack and mobile builds.";
+
 export const metadata: Metadata = {
-  title: "Sandeep M S — AI Engineer & Full Stack Developer",
-  description:
-    "Portfolio for Sandeep M S — AI Engineer building LLM & voice agents, AI chat platforms, and multi-tenant SaaS, plus full stack and mobile builds.",
+  // makes og:image and other URLs absolute, which link-preview crawlers require
+  metadataBase: new URL("https://www.sandeepms.in"),
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Sandeep M S",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    locale: "en_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
+  // PNG fallbacks: WhatsApp, iOS and many crawlers ignore SVG icons
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
-    shortcut: "/favicon.svg",
-    apple: "/favicon.svg",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: { url: "/apple-touch-icon.png", sizes: "180x180" },
   },
 };
 
