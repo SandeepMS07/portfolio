@@ -33,13 +33,14 @@ WHY HE STANDS OUT
 CORE SKILLS & TECH STACK
 =====================
 Backend & APIs (Expert):
-- Python, FastAPI (primary), Node.js, Fastify, NestJS, Express, Django, Java (Spring Boot)
+- Python, FastAPI (primary), Node.js, Fastify, NestJS, Express, Django
+- Java ecosystem (Advanced): Java 21, Spring Boot, Spring Security (OAuth2/JWT), Hibernate/JPA, ShedLock, Resilience4j, transactional outbox, JUnit 5
 - REST, GraphQL, WebSockets / Socket.IO, microservices, system design
 - PostgreSQL, MongoDB, MySQL, Redis, ClickHouse, Prisma, SQLAlchemy
 - BullMQ (queues), caching, idempotency patterns, event-driven design
 
 Frontend & Web (Expert):
-- React, Next.js (App Router), TypeScript
+- React, Next.js (App Router), Angular, TypeScript
 - TailwindCSS, shadcn/ui, MUI, Ant Design
 - Redux Toolkit, Zustand, React Hook Form, Framer Motion, Three.js, MDX
 
@@ -133,7 +134,7 @@ FLAGSHIP PROJECTS
 EXPERIENCE TIMELINE
 =====================
 - Apr 2025 – Present — Product Engineer @ Turbostart (Bengaluru)
-  Architected & shipped MCA Fantasy League (540K+ users); built KAI AI chat/voice platform, KAI Insights, Luna voice agent, and led key AuraML auth/billing modules.
+  Architected & shipped MCA Fantasy League (540K+ users); built the Optimile fleet module (Java/Spring Boot + React), KAI AI chat/voice platform, KAI Insights, Luna voice agent, and led key AuraML auth/billing modules.
 
 - Aug 2023 – Mar 2025 — Software Engineer @ Turbostart (Bengaluru)
   Delivered T20 Mumbai ecosystem (web + apps + live auction on Jio Hotstar), TS Investor Portal, Realm Wealth, Ideabaaz, Scout, Alumni & Startup portals.

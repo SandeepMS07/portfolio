@@ -53,6 +53,7 @@ const groups: Group[] = [
       { name: "Node.js", level: "advanced" },
       { name: "Fastify", level: "advanced" },
       { name: "NestJS", level: "advanced" },
+      { name: "Java / Spring Boot", level: "advanced" },
       { name: "PostgreSQL", level: "advanced" },
       { name: "Redis", level: "advanced" },
       { name: "GraphQL", level: "advanced" },
@@ -69,6 +70,7 @@ const groups: Group[] = [
     bars: [
       { name: "Next.js", level: "expert" },
       { name: "React", level: "expert" },
+      { name: "Angular", level: "expert" },
       { name: "TypeScript", level: "advanced" },
       { name: "TailwindCSS", level: "advanced" },
       { name: "Framer Motion", level: "advanced" },
